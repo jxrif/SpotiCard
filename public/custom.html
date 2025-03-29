@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpotiCard - Custom Card</title>
+    <meta
+      name="description"
+      content="Create custom lyrics cards with your own text and styling."
+    />
+    <!-- Meta tags for social media -->
+    <meta property="og:title" content="SpotiCard - Custom Card" />
+    <meta
+      property="og:description"
+      content="Create custom lyrics cards with your own text and styling"
+    />
+    <meta
+      property="og:image"
+      content="assets/spotify-light.png"
+      id="meta-image"
+    />
+    <link rel="icon" href="assets/spotify-light.png" id="favicon" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/custom.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="light-theme no-select">
+    <div class="hamburger-menu">
+      <button id="hamburger-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="menu-dropdown hidden">
+        <a href="index.html">Lyrics Card</a>
+        <a href="custom.html">Custom Card</a>
+      </div>
+    </div>
+
+    <div class="container">
+      <header>
+        <h1>Custom SpotiCard</h1>
+        <p>Create your own custom lyrics card</p>
+      </header>
+
+      <div class="main-content">
+        <div class="card-container">
+          <div class="card-background">
+            <div class="card" id="lyrics-card">
+              <div class="card-content">
+                <div class="song-info">
+                  <div class="album-art">
+                    <img
+                      id="album-art"
+                      src="assets/404.jpg"
+                      alt="Album Art"
+                      draggable="false"
+                    />
+                  </div>
+                  <div class="track-details">
+                    <p id="track-name" contenteditable="true">Empty</p>
+                    <p id="artist-name" contenteditable="true">Empty</p>
+                  </div>
+                </div>
+                <div class="lyrics">
+                  <p id="lyrics-text" contenteditable="true">
+                    Enter your custom lyrics here
+                  </p>
+                </div>
+                <div class="spotify-logo">
+                  <img
+                    id="logo-image"
+                    src="assets/spotify-logo.png"
+                    alt="Logo"
+                    draggable="false"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="options-container">
+            <div class="custom-form">
+              <h3>Custom Image</h3>
+              <div class="form-group">
+                <label for="custom-image-input">Upload Album Art:</label>
+                <input type="file" id="custom-image-input" accept="image/*" />
+              </div>
+            </div>
+
+            <div class="custom-gradient">
+              <div class="split-container">
+                <div class="split-left">
+                  <h3>Custom gradient</h3>
+                  <div class="color-inputs">
+                    <div class="color-input">
+                      <label for="color1">Color 1</label>
+                      <input type="color" id="color1" value="#F5A9C7" />
+                      <div class="color-preview" id="color1-preview"></div>
+                    </div>
+                    <div class="color-input">
+                      <label for="color2">Color 2</label>
+                      <input type="color" id="color2" value="#E56B9F" />
+                      <div class="color-preview" id="color2-preview"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="split-divider"></div>
+                <div class="split-right">
+                  <div class="social-links">
+                    <a href="https://instagram.com/jxrif" target="_blank">
+                      <i class="fab fa-instagram"></i> jxrif
+                    </a>
+                    <a href="https://snapchat.com/add/jxrifff" target="_blank">
+                      <i class="fab fa-snapchat"></i> jxrifff
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="gradient-options">
+              <h3>Choose a gradient</h3>
+              <div class="gradient-list">
+                <div
+                  class="gradient-item"
+                  data-gradient="linear-gradient(135deg, #F5A9C7, #E56B9F)"
+                ></div>
+                <div
+                  class="gradient-item"
+                  data-gradient="linear-gradient(135deg, #B19CD9, #8A63BC)"
+                ></div>
+                <div
+                  class="gradient-item"
+                  data-gradient="linear-gradient(135deg, #86C5DA, #5A9CBB)"
+                ></div>
+                <div
+                  class="gradient-item"
+                  data-gradient="linear-gradient(135deg, #F8C3A3, #E8845C)"
+                ></div>
+                <div
+                  class="gradient-item"
+                  data-gradient="linear-gradient(135deg, #A8D8B9, #6BB983)"
+                ></div>
+                <div
+                  class="gradient-item"
+                  data-gradient="linear-gradient(135deg, #FFFFFF, #000000)"
+                ></div>
+              </div>
+            </div>
+
+            <button id="download-btn">Download Card</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theme-toggle">
+      <button id="theme-toggle-btn">
+        <i class="fas fa-sun"></i>
+      </button>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/custom.js"></script>
+  </body>
+</html>
