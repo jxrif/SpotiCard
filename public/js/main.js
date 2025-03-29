@@ -1,740 +1,1221 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const trackInput = document.getElementById("track-input");
-  const secondaryTrackInput = document.getElementById("secondary-track-input");
-  const generateBtn = document.getElementById("generate-btn");
-  const secondaryGenerateBtn = document.getElementById(
-    "secondary-generate-btn"
-  );
-  const downloadBtn = document.getElementById("download-btn");
-  const editLyricsBtn = document.getElementById("edit-lyrics-btn");
-  const saveLyricsBtn = document.getElementById("save-lyrics-btn");
-  const cancelEditBtn = document.getElementById("cancel-edit-btn");
-  const editLyricsContainer = document.querySelector(".edit-lyrics-container");
-  const editLyricsTextarea = document.getElementById("edit-lyrics-textarea");
-  const cardContainer = document.querySelector(".card-container");
-  const cardBackground = document.querySelector(".card-background");
-  const loadingElement = document.querySelector(".loading");
-  const errorNotification = document.querySelector(".error-notification");
-  const lyricsCard = document.getElementById("lyrics-card");
-  const albumArt = document.getElementById("album-art");
-  const trackName = document.getElementById("track-name");
-  const artistName = document.getElementById("artist-name");
-  const lyricsText = document.getElementById("lyrics-text");
-  const gradientItems = document.querySelectorAll(".gradient-item");
-  const color1Input = document.getElementById("color1");
-  const color2Input = document.getElementById("color2");
-  const color1Preview = document.getElementById("color1-preview");
-  const color2Preview = document.getElementById("color2-preview");
-  const refreshLyricsBtn = document.getElementById("refresh-lyrics-btn");
-  const mainInputSection = document.getElementById("main-input-section");
-  const secondaryInputSection = document.querySelector(
-    ".secondary-input-section"
-  );
-
-  // Store track data globally for refresh functionality
-  let currentTrackData = null;
-  let allLyricsLines = []; // Store all individual lines of lyrics
-  let currentGradient = `linear-gradient(135deg, ${color1Input.value}, ${color2Input.value})`;
-
-  // Initialize color previews
-  color1Preview.style.backgroundColor = color1Input.value;
-  color2Preview.style.backgroundColor = color2Input.value;
-
-  // Update color previews and apply gradient when inputs change
-  color1Input.addEventListener("input", () => {
-    color1Preview.style.backgroundColor = color1Input.value;
-    applyCustomGradient();
-  });
-
-  color2Input.addEventListener("input", () => {
-    color2Preview.style.backgroundColor = color2Input.value;
-    applyCustomGradient();
-  });
-
-  function applyCustomGradient() {
-    const customGradient = `linear-gradient(135deg, ${color1Input.value}, ${color2Input.value})`;
-    applyGradient(customGradient);
-  }
-
-  // Generate card when button is clicked
-  generateBtn.addEventListener("click", generateCard);
-  secondaryGenerateBtn.addEventListener("click", generateCard);
-
-  // Generate card when Enter key is pressed in input
-  trackInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      generateCard();
-    }
-  });
-
-  secondaryTrackInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      generateCard();
-    }
-  });
-
-  // Edit lyrics
-  editLyricsBtn.addEventListener("click", () => {
-    editLyricsTextarea.value = lyricsText.textContent;
-    editLyricsContainer.classList.remove("hidden");
-    editLyricsBtn.classList.add("hidden");
-  });
-
-  saveLyricsBtn.addEventListener("click", () => {
-    lyricsText.textContent = editLyricsTextarea.value;
-    editLyricsContainer.classList.add("hidden");
-    editLyricsBtn.classList.remove("hidden");
-
-    // Enable download button after editing lyrics
-    downloadBtn.disabled = false;
-
-    adjustCardHeight();
-  });
-
-  cancelEditBtn.addEventListener("click", () => {
-    editLyricsContainer.classList.add("hidden");
-    editLyricsBtn.classList.remove("hidden");
-  });
-
-  // Download card when button is clicked
-  downloadBtn.addEventListener("click", downloadCard);
-
-  // Change gradient when a gradient item is clicked
-  gradientItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      // Remove active class from all items
-      gradientItems.forEach((i) => i.classList.remove("active"));
-
-      // Add active class to clicked item
-      item.classList.add("active");
-
-      const gradient = item.getAttribute("data-gradient");
-      applyGradient(gradient);
-
-      // Extract colors from gradient and update color inputs
-      const colors = gradient.match(/#[a-fA-F0-9]{6}/g);
-      if (colors && colors.length >= 2) {
-        color1Input.value = colors[0];
-        color2Input.value = colors[1];
-        color1Preview.style.backgroundColor = colors[0];
-        color2Preview.style.backgroundColor = colors[1];
-      }
-    });
-  });
-
-  // Refresh lyrics
-  refreshLyricsBtn.addEventListener("click", () => {
-    refreshRandomLyrics();
-  });
-
-  function refreshRandomLyrics() {
-    if (
-      allLyricsLines &&
-      Array.isArray(allLyricsLines) &&
-      allLyricsLines.length > 0
-    ) {
-      // Randomly decide how many lines to show (1-3)
-      const numLines = Math.floor(Math.random() * 3) + 1;
-
-      // Randomly select a starting point that ensures we don't go out of bounds
-      const maxStartIndex = Math.max(0, allLyricsLines.length - numLines);
-      const startIndex = Math.floor(Math.random() * (maxStartIndex + 1));
-
-      // Get the selected lines
-      const selectedLines = allLyricsLines.slice(
-        startIndex,
-        startIndex + numLines
-      );
-
-      // Update the lyrics text
-      lyricsText.textContent = selectedLines.join("\n");
-      adjustCardHeight();
-    } else if (typeof allLyricsLines === "string") {
-      // If allLyricsLines is a string (fallback case)
-      lyricsText.textContent = allLyricsLines;
-      adjustCardHeight();
-    }
-  }
-
-  async function generateCard() {
-    // Get the input value from either the main or secondary input
-    const trackUrl = mainInputSection.classList.contains("hidden")
-      ? secondaryTrackInput.value.trim()
-      : trackInput.value.trim();
-
-    if (!trackUrl) {
-      showNotification(
-        errorNotification,
-        "Please enter a Spotify track URL or ID"
-      );
-      return;
-    }
-
-    // Show loading state
-    loadingElement.classList.remove("hidden");
-    cardContainer.classList.add("hidden");
-
+(function (_0x5b05e2, _0x18ddfe) {
+  const _0x34d7d1 = _0x365c,
+    _0x4155db = _0x5b05e2();
+  while (!![]) {
     try {
-      // Extract track ID from URL
-      const trackId = extractTrackId(trackUrl);
-
-      if (!trackId) {
-        showNotification(
-          errorNotification,
-          "Invalid Spotify URL. Please enter a valid Spotify track URL."
-        );
-        loadingElement.classList.add("hidden");
-        mainInputSection.classList.remove("hidden");
-        return;
-      }
-
-      // Get track info from Spotify
-      const trackData = await getTrackInfo(trackId);
-
-      if (!trackData) {
-        showNotification(
-          errorNotification,
-          "Could not find track information. Please check the URL."
-        );
-        loadingElement.classList.add("hidden");
-        mainInputSection.classList.remove("hidden");
-        return;
-      }
-
-      // Store track data globally
-      currentTrackData = trackData;
-
-      // Get lyrics for the track
+      const _0x4b9c3a =
+        (-parseInt(_0x34d7d1(0x1fb)) / 0x1) *
+          (-parseInt(_0x34d7d1(0x1da)) / 0x2) +
+        (parseInt(_0x34d7d1(0x22a)) / 0x3) *
+          (-parseInt(_0x34d7d1(0x1f5)) / 0x4) +
+        (parseInt(_0x34d7d1(0x21d)) / 0x5) *
+          (-parseInt(_0x34d7d1(0x255)) / 0x6) +
+        -parseInt(_0x34d7d1(0x1c9)) / 0x7 +
+        parseInt(_0x34d7d1(0x1ec)) / 0x8 +
+        parseInt(_0x34d7d1(0x1e7)) / 0x9 +
+        parseInt(_0x34d7d1(0x200)) / 0xa;
+      if (_0x4b9c3a === _0x18ddfe) break;
+      else _0x4155db["push"](_0x4155db["shift"]());
+    } catch (_0x46157b) {
+      _0x4155db["push"](_0x4155db["shift"]());
+    }
+  }
+})(_0x131b, 0xd10df),
+  (function (_0x307b64, _0x39b175) {
+    const _0x2a9e1d = _0x365c,
+      _0x187423 = _0x5b71,
+      _0x38414b = _0x307b64();
+    while (!![]) {
       try {
-        const lyrics = await getLyrics(
-          trackData.name,
-          trackData.artists[0].name
-        );
-
-        if (!lyrics) {
-          throw new Error("No lyrics found");
-        }
-
-        // Store all lyrics lines
-        allLyricsLines = lyrics;
-
-        // Select random lines for initial display
-        refreshRandomLyrics();
-
-        // Update card with track data
-        updateCard(trackData);
-
-        // Hide main input section and show secondary input section
-        mainInputSection.classList.add("hidden");
-        secondaryInputSection.classList.remove("hidden");
-
-        // Hide loading and show card
-        loadingElement.classList.add("hidden");
-        cardContainer.classList.remove("hidden");
-      } catch (lyricsError) {
-        // Handle lyrics error with a nice message
-        showNotification(
-          errorNotification,
-          `<i class="fas fa-search"></i> Lyrics not found for "${trackData.name}" by ${trackData.artists[0].name}`
-        );
-
-        // Set a fallback message
-        allLyricsLines = "Lyrics unavailable";
-        lyricsText.textContent = "Lyrics unavailable";
-
-        // Still show the card with track info but with "Lyrics unavailable" message
-        updateCard(trackData);
-
-        // Hide main input section and show secondary input section
-        mainInputSection.classList.add("hidden");
-        secondaryInputSection.classList.remove("hidden");
-
-        // Hide loading and show card
-        loadingElement.classList.add("hidden");
-        cardContainer.classList.remove("hidden");
+        const _0xaa978c =
+          (parseInt(_0x187423(0x159)) / 0x1) *
+            (-parseInt(_0x187423(0x153)) / 0x2) +
+          (-parseInt(_0x187423(0x178)) / 0x3) *
+            (parseInt(_0x187423(0x194)) / 0x4) +
+          (parseInt(_0x187423(0x12a)) / 0x5) *
+            (-parseInt(_0x187423(0x14c)) / 0x6) +
+          (-parseInt(_0x187423(0x139)) / 0x7) *
+            (parseInt(_0x187423(0x168)) / 0x8) +
+          (parseInt(_0x187423(0x190)) / 0x9) *
+            (parseInt(_0x187423(0x182)) / 0xa) +
+          (parseInt(_0x187423(0x145)) / 0xb) *
+            (-parseInt(_0x187423(0x149)) / 0xc) +
+          parseInt(_0x187423(0x174)) / 0xd;
+        if (_0xaa978c === _0x39b175) break;
+        else _0x38414b[_0x2a9e1d(0x205)](_0x38414b[_0x2a9e1d(0x1d6)]());
+      } catch (_0x38a1e7) {
+        _0x38414b["push"](_0x38414b["shift"]());
       }
-    } catch (error) {
-      console.error("Error:", error);
-      showNotification(
-        errorNotification,
-        `<i class="fas fa-exclamation-circle"></i> An error occurred: ${error.message}`
-      );
-      loadingElement.classList.add("hidden");
-      mainInputSection.classList.remove("hidden");
     }
-  }
-
-  function extractTrackId(url) {
-    // Extract track ID from various Spotify URL formats
-    const patterns = [
-      /spotify:track:([a-zA-Z0-9]+)/, // Spotify URI
-      /open.spotify.com\/track\/([a-zA-Z0-9]+)/, // Web URL
-      /^([a-zA-Z0-9]+)$/, // Just the ID
+  })(_0x25c8, 0xcd6b2);
+function _0x2f43(_0x9c9450, _0x5d97a0) {
+  const _0x885cf4 = _0x4702();
+  return (
+    (_0x2f43 = function (_0x4addcb, _0x25208a) {
+      _0x4addcb = _0x4addcb - 0x1b4;
+      let _0x4029a5 = _0x885cf4[_0x4addcb];
+      return _0x4029a5;
+    }),
+    _0x2f43(_0x9c9450, _0x5d97a0)
+  );
+}
+function _0x4702() {
+  const _0x289916 = _0x365c,
+    _0x3bd096 = _0x5b71,
+    _0x475585 = [
+      _0x289916(0x20d),
+      _0x3bd096(0x16f),
+      _0x289916(0x24e),
+      _0x289916(0x241),
+      _0x3bd096(0x137),
+      _0x289916(0x214),
+      _0x3bd096(0x1a4),
+      _0x289916(0x227),
+      _0x289916(0x238),
+      _0x289916(0x23e),
+      _0x289916(0x24b),
+      _0x3bd096(0x124),
+      _0x289916(0x231),
+      _0x3bd096(0x130),
+      _0x289916(0x1dd),
+      _0x3bd096(0x172),
+      _0x3bd096(0x14f),
+      _0x3bd096(0x150),
+      _0x289916(0x1f6),
+      _0x3bd096(0x13e),
+      "message",
+      _0x3bd096(0x13f),
+      _0x3bd096(0x186),
+      _0x3bd096(0x13a),
+      _0x289916(0x1f8),
+      _0x3bd096(0x125),
+      _0x3bd096(0x18a),
+      _0x3bd096(0x14d),
+      _0x289916(0x1f1),
+      _0x3bd096(0x13d),
+      _0x3bd096(0x121),
+      _0x3bd096(0x173),
+      "textContent",
+      _0x3bd096(0x169),
+      _0x3bd096(0x183),
+      _0x3bd096(0x15b),
+      _0x3bd096(0x17a),
+      _0x3bd096(0x132),
+      _0x3bd096(0x19d),
+      _0x3bd096(0x141),
+      _0x289916(0x222),
+      _0x3bd096(0x171),
+      _0x3bd096(0x167),
+      _0x3bd096(0x158),
+      _0x289916(0x228),
+      _0x289916(0x24f),
+      _0x289916(0x1fa),
+      _0x3bd096(0x161),
+      _0x3bd096(0x15e),
+      _0x3bd096(0x163),
+      _0x289916(0x256),
+      _0x3bd096(0x18c),
+      _0x289916(0x1e6),
+      "contains",
+      _0x3bd096(0x160),
+      _0x3bd096(0x1a0),
+      _0x3bd096(0x15f),
+      "querySelectorAll",
+      _0x3bd096(0x120),
+      _0x3bd096(0x143),
+      _0x3bd096(0x19c),
+      _0x289916(0x243),
+      _0x3bd096(0x127),
+      _0x289916(0x1cb),
+      _0x3bd096(0x15c),
+      _0x289916(0x1db),
+      _0x3bd096(0x16b),
+      _0x3bd096(0x18e),
+      _0x3bd096(0x152),
+      _0x3bd096(0x142),
+      _0x289916(0x239),
+      _0x3bd096(0x176),
+      _0x3bd096(0x123),
+      _0x3bd096(0x19a),
+      _0x3bd096(0x14b),
+      _0x3bd096(0x12e),
+      _0x3bd096(0x184),
+      _0x3bd096(0x1a2),
+      _0x3bd096(0x199),
+      "artists",
+      _0x3bd096(0x197),
+      _0x3bd096(0x170),
+      _0x3bd096(0x18f),
+      _0x3bd096(0x13c),
+      _0x3bd096(0x18d),
+      "lineTo",
+      _0x3bd096(0x19e),
+      _0x3bd096(0x179),
+      _0x3bd096(0x16d),
+      _0x3bd096(0x17b),
+      _0x3bd096(0x193),
+      _0x289916(0x1fe),
+      _0x3bd096(0x131),
+      _0x3bd096(0x14a),
+      _0x3bd096(0x17f),
+      _0x3bd096(0x16e),
+      _0x3bd096(0x185),
+      _0x3bd096(0x12b),
+      _0x3bd096(0x12f),
+      _0x3bd096(0x19b),
+      _0x289916(0x1f0),
+      "<i\x20class=\x27fas\x20fa-spinner\x20fa-spin\x27></i>\x20Generating\x20image...",
+      _0x3bd096(0x18b),
+      _0x3bd096(0x164),
+      _0x3bd096(0x11e),
+      _0x3bd096(0x154),
+      "refresh-lyrics-btn",
+      _0x3bd096(0x189),
+      _0x3bd096(0x151),
+      _0x3bd096(0x180),
+      _0x3bd096(0x157),
+      _0x3bd096(0x16a),
+      _0x3bd096(0x1a1),
+      _0x3bd096(0x165),
+      _0x3bd096(0x136),
+      _0x3bd096(0x191),
+      _0x3bd096(0x11f),
+      _0x289916(0x1e9),
+      _0x3bd096(0x162),
+      _0x289916(0x23b),
+      _0x3bd096(0x19f),
+      _0x3bd096(0x15d),
+      _0x289916(0x1c7),
+      _0x3bd096(0x126),
+      _0x3bd096(0x12c),
+      _0x3bd096(0x166),
+      _0x3bd096(0x135),
+      _0x3bd096(0x122),
+      _0x289916(0x1e2),
+      _0x3bd096(0x156),
+      _0x289916(0x1e5),
+      _0x289916(0x20e),
+      _0x3bd096(0x187),
+      _0x289916(0x246),
+      _0x3bd096(0x144),
+      "scale",
+      _0x289916(0x1f3),
+      _0x289916(0x259),
+      _0x3bd096(0x15a),
+      "input",
+      _0x3bd096(0x175),
+      _0x3bd096(0x138),
     ];
-
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
+  return (
+    (_0x4702 = function () {
+      return _0x475585;
+    }),
+    _0x4702()
+  );
+}
+function _0x25c8() {
+  const _0x295bac = _0x365c,
+    _0xcf2fb3 = [
+      _0x295bac(0x205),
+      _0x295bac(0x249),
+      _0x295bac(0x233),
+      _0x295bac(0x258),
+      _0x295bac(0x229),
+      "artist-name",
+      _0x295bac(0x216),
+      _0x295bac(0x1cc),
+      _0x295bac(0x1f7),
+      "shadowOffsetX",
+      _0x295bac(0x24a),
+      _0x295bac(0x202),
+      _0x295bac(0x250),
+      _0x295bac(0x1ea),
+      _0x295bac(0x1ca),
+      _0x295bac(0x1f2),
+      _0x295bac(0x224),
+      _0x295bac(0x1e4),
+      _0x295bac(0x213),
+      "split",
+      _0x295bac(0x23f),
+      _0x295bac(0x226),
+      _0x295bac(0x20a),
+      _0x295bac(0x22b),
+      "edit-lyrics-textarea",
+      "2763090UkXiBP",
+      _0x295bac(0x1fc),
+      _0x295bac(0x1f4),
+      "8ZjGBzp",
+      _0x295bac(0x1d1),
+      _0x295bac(0x1ef),
+      _0x295bac(0x1c5),
+      _0x295bac(0x1e1),
+      _0x295bac(0x20d),
+      "active",
+      _0x295bac(0x212),
+      "hidden",
+      "disabled",
+      _0x295bac(0x21a),
+      _0x295bac(0x20c),
+      _0x295bac(0x215),
+      _0x295bac(0x1e0),
+      _0x295bac(0x1c8),
+      _0x295bac(0x21c),
+      _0x295bac(0x203),
+      _0x295bac(0x240),
+      "<i\x20class=\x22fas\x20fa-search\x22></i>\x20Lyrics\x20not\x20found\x20for\x20\x22",
+      _0x295bac(0x1db),
+      _0x295bac(0x219),
+      "onload",
+      _0x295bac(0x230),
+      _0x295bac(0x23c),
+      _0x295bac(0x244),
+      _0x295bac(0x206),
+      _0x295bac(0x257),
+      _0x295bac(0x235),
+      _0x295bac(0x208),
+      _0x295bac(0x218),
+      _0x295bac(0x21f),
+      _0x295bac(0x22e),
+      "getContext",
+      _0x295bac(0x1e8),
+      _0x295bac(0x221),
+      _0x295bac(0x253),
+      _0x295bac(0x1f9),
+      _0x295bac(0x252),
+      _0x295bac(0x1eb),
+      _0x295bac(0x1df),
+      "rgba(0,\x200,\x200,\x200.25)",
+      "floor",
+      "/api/spotify/track/",
+      _0x295bac(0x1d0),
+      "\x20-\x20SpotiCard.png",
+      _0x295bac(0x1cd),
+      _0x295bac(0x242),
+      _0x295bac(0x211),
+      "7861PZTwQj",
+      _0x295bac(0x1d7),
+      _0x295bac(0x1d6),
+      "Failed\x20to\x20fetch\x20lyrics",
+      _0x295bac(0x1ce),
+      "replace",
+      "Error\x20fetching\x20track\x20info:",
+      _0x295bac(0x22d),
+      _0x295bac(0x24d),
+      _0x295bac(0x232),
+      "minHeight",
+      _0x295bac(0x1d8),
+      _0x295bac(0x23a),
+      _0x295bac(0x228),
+      "crossOrigin",
+      _0x295bac(0x1dc),
+      "108348zqidez",
+      "font",
+      "lyrics-card",
+      _0x295bac(0x254),
+      "835966YzMlSU",
+      ".card-background",
+      _0x295bac(0x251),
+      _0x295bac(0x245),
+      ".card",
+      _0x295bac(0x1d9),
+      "814jpRrIU",
+      _0x295bac(0x220),
+      "textContent",
+      _0x295bac(0x1ff),
+      _0x295bac(0x225),
+      _0x295bac(0x207),
+      _0x295bac(0x20f),
+      _0x295bac(0x237),
+      _0x295bac(0x22c),
+      _0x295bac(0x1c6),
+      "fillStyle",
+      _0x295bac(0x209),
+      _0x295bac(0x1c4),
+      _0x295bac(0x234),
+      _0x295bac(0x201),
+      "backgroundColor",
+      _0x295bac(0x210),
+      _0x295bac(0x204),
+      _0x295bac(0x1cf),
+      _0x295bac(0x1d3),
+      _0x295bac(0x217),
+      _0x295bac(0x1d5),
+      _0x295bac(0x24c),
+      _0x295bac(0x247),
+      _0x295bac(0x1d4),
+      _0x295bac(0x1f1),
+      "assets/404.jpg",
+      _0x295bac(0x21b),
+      _0x295bac(0x236),
+      _0x295bac(0x1d2),
+      _0x295bac(0x1e3),
+      _0x295bac(0x223),
+      _0x295bac(0x22f),
+      _0x295bac(0x1fd),
+      _0x295bac(0x1ee),
+      _0x295bac(0x20b),
+    ];
+  return (
+    (_0x25c8 = function () {
+      return _0xcf2fb3;
+    }),
+    _0x25c8()
+  );
+}
+const _0x71de35 = _0x2f43;
+function _0x131b() {
+  const _0x2b10a4 = [
+    "querySelector",
+    "width",
+    "275XbAQdA",
+    "innerHTML",
+    "getElementById",
+    "album",
+    ".loading",
+    "shadowBlur",
+    "fillRect",
+    "/api/lyrics/",
+    "Please\x20enter\x20a\x20Spotify\x20track\x20URL\x20or\x20ID",
+    "edit-lyrics-btn",
+    "color2",
+    "trim",
+    "max",
+    "3Hjkujx",
+    "main-input-section",
+    "1006173dQBFqK",
+    "getBoundingClientRect",
+    "secondary-generate-btn",
+    "No\x20lyrics\x20found",
+    "length",
+    "data-gradient",
+    "url",
+    "forEach",
+    "aspectRatio",
+    "src",
+    "1ZBDttp",
+    "map",
+    "getAttribute",
+    "drawImage",
+    "385sOOMTz",
+    "isArray",
+    "<i\x20class=\x22fas\x20fa-exclamation-circle\x22></i>\x20An\x20error\x20occurred:\x20",
+    "textContent",
+    "Invalid\x20Spotify\x20URL.\x20Please\x20enter\x20a\x20valid\x20Spotify\x20track\x20URL.",
+    "clip",
+    "addEventListener",
+    "slice",
+    "bold\x2024px\x20\x27Circular\x27,\x20Arial,\x20sans-serif",
+    ".edit-lyrics-container",
+    "createLinearGradient",
+    "secondary-track-input",
+    "14px\x20\x27Circular\x27,\x20Arial,\x20sans-serif",
+    "cancel-edit-btn",
+    ".card-container",
+    "3vUkrkh",
+    "generate-btn",
+    "save",
+    "click",
+    "23262930CHItwY",
+    "track-input",
+    "color1",
+    "7288845KxQEfO",
+    "keypress",
+    "filter",
+    "5633136tAjGju",
+    "1428834avNQDa",
+    "72474yIPtBX",
+    "<i\x20class=\x27fas\x20fa-check-circle\x27></i>\x20Image\x20downloaded\x20successfully!",
+    "lyrics",
+    "color2-preview",
+    "4299738jnJdeS",
+    "Lyrics\x20unavailable",
+    "href",
+    "lyrics-text",
+    "Anonymous",
+    "classList",
+    "8814995zWEeNP",
+    "save-lyrics-btn",
+    "string",
+    "download-btn",
+    "min",
+    "Enter",
+    "closePath",
+    "left",
+    "5259668RCKrpp",
+    "top",
+    "match",
+    "canvas",
+    "2512byuDHZ",
+    "shift",
+    ".secondary-input-section",
+    "color1-preview",
+    "DOMContentLoaded",
+    "89302DFWBsi",
+    "style",
+    "moveTo",
+    "auto",
+    "crossOrigin",
+    "12xClPgK",
+    "add",
+    "Error:",
+    ".gradient-item",
+    "bold\x2016px\x20\x27Circular\x27,\x20Arial,\x20sans-serif",
+    "image/png",
+    "key",
+    "9/16",
+    "6646599misFZO",
+    "25PlTEBS",
+    "random",
+    "join",
+    "json",
+    "9069560EGgIPh",
+    "album-art",
+    "600px",
+    "artists",
+    "measureText",
+    "restore",
+    "error",
+    "fade-out",
+    "toDataURL",
+    "6390176yIihIg",
+    ".card-background",
+    "remove",
+    "#F5A9C7",
+    "Failed\x20to\x20fetch\x20track\x20information",
+    "assets/spotify-logo.png",
+    "17waRaKX",
+    "track-name",
+    "48619636odlwLG",
+    "images",
+    "black",
+    "17461880oitdlG",
+    "name",
+    "10aHgVtV",
+    "fillText",
+    "onerror",
+    "push",
+    "show",
+    "createElement",
+    "shadowOffsetY",
+    "Error\x20fetching\x20lyrics:",
+    "linear-gradient(135deg,\x20",
+    "shadowColor",
+    "SpotiCard",
+    "value",
+    "3253726voDskV",
+    "77dAQPdo",
+    "background",
+    "#333",
+    "beginPath",
+    "Could\x20not\x20find\x20track\x20information.\x20Please\x20check\x20the\x20URL.",
+    "download",
+    "height",
+    ".error-notification",
+    "fill",
+    "quadraticCurveTo",
+    "\x22\x20by\x20",
+    "addColorStop",
+  ];
+  _0x131b = function () {
+    return _0x2b10a4;
+  };
+  return _0x131b();
+}
+function _0x365c(_0x286d10, _0x18be28) {
+  const _0x131b76 = _0x131b();
+  return (
+    (_0x365c = function (_0x365cb9, _0x20be2f) {
+      _0x365cb9 = _0x365cb9 - 0x1c4;
+      let _0x3b36db = _0x131b76[_0x365cb9];
+      return _0x3b36db;
+    }),
+    _0x365c(_0x286d10, _0x18be28)
+  );
+}
+function _0x5b71(_0x3a4f87, _0x3d31e4) {
+  const _0x5e67da = _0x25c8();
+  return (
+    (_0x5b71 = function (_0x4b9107, _0x38e269) {
+      _0x4b9107 = _0x4b9107 - 0x11e;
+      let _0x406e91 = _0x5e67da[_0x4b9107];
+      return _0x406e91;
+    }),
+    _0x5b71(_0x3a4f87, _0x3d31e4)
+  );
+}
+(function (_0xb3b928, _0x4e3c5f) {
+  const _0x23d50c = _0x5b71,
+    _0x359e34 = _0x2f43,
+    _0x2217a2 = _0xb3b928();
+  while (!![]) {
+    try {
+      const _0x5636bb =
+        (-parseInt(_0x359e34(0x1df)) / 0x1) *
+          (parseInt(_0x359e34(0x1f9)) / 0x2) +
+        parseInt(_0x359e34(0x1d9)) / 0x3 +
+        parseInt(_0x359e34(0x1cc)) / 0x4 +
+        parseInt(_0x359e34(0x200)) / 0x5 +
+        (parseInt(_0x359e34(0x1eb)) / 0x6) *
+          (-parseInt(_0x359e34(0x1d3)) / 0x7) +
+        (-parseInt(_0x359e34(0x238)) / 0x8) *
+          (-parseInt(_0x359e34(0x201)) / 0x9) +
+        -parseInt(_0x359e34(0x205)) / 0xa;
+      if (_0x5636bb === _0x4e3c5f) break;
+      else _0x2217a2[_0x23d50c(0x177)](_0x2217a2[_0x23d50c(0x13b)]());
+    } catch (_0x117525) {
+      _0x2217a2[_0x23d50c(0x177)](_0x2217a2[_0x23d50c(0x13b)]());
+    }
+  }
+})(_0x4702, 0xb3fa0),
+  document[_0x71de35(0x1e4)](_0x71de35(0x222), () => {
+    const _0x3852d9 = _0x365c,
+      _0x3bade4 = _0x5b71,
+      _0xa60089 = _0x71de35,
+      _0x39929e = document[_0xa60089(0x21c)](_0xa60089(0x1e0)),
+      _0x518cbb = document[_0xa60089(0x21c)](_0xa60089(0x1ef)),
+      _0x219cbb = document[_0x3bade4(0x127)](_0x3bade4(0x181)),
+      _0x4b2c38 = document[_0xa60089(0x21c)](_0x3bade4(0x128)),
+      _0xa88096 = document[_0x3852d9(0x21f)](_0x3bade4(0x17e)),
+      _0x2e43b6 = document[_0xa60089(0x21c)](_0xa60089(0x211)),
+      _0x3e7728 = document[_0xa60089(0x21c)](_0xa60089(0x23e)),
+      _0x113666 = document[_0xa60089(0x21c)](_0xa60089(0x1bf)),
+      _0x55d2c1 = document[_0xa60089(0x23d)](_0xa60089(0x21b)),
+      _0x5c4834 = document[_0x3bade4(0x127)](_0xa60089(0x230)),
+      _0x5b7463 = document[_0x3bade4(0x16e)](_0x3852d9(0x248)),
+      _0x41ef6f = document[_0x3bade4(0x16e)](_0x3bade4(0x14e)),
+      _0x123928 = document[_0xa60089(0x23d)](_0xa60089(0x23f)),
+      _0x211d60 = document[_0xa60089(0x23d)](_0x3bade4(0x17d)),
+      _0x554c26 = document[_0x3bade4(0x127)](_0xa60089(0x228)),
+      _0x34f32c = document[_0x3bade4(0x127)](_0x3852d9(0x1ed)),
+      _0x31ce89 = document[_0xa60089(0x21c)](_0xa60089(0x1c3)),
+      _0x36b3aa = document[_0xa60089(0x21c)](_0x3bade4(0x17c)),
+      _0x36e7c2 = document[_0xa60089(0x21c)](_0xa60089(0x21e)),
+      _0x1327dd = document[_0xa60089(0x217)](_0xa60089(0x1d0)),
+      _0x1bee50 = document[_0xa60089(0x21c)](_0xa60089(0x20b)),
+      _0x3e1ba8 = document[_0xa60089(0x21c)](_0xa60089(0x1e5)),
+      _0x3bca0b = document[_0x3bade4(0x127)](_0xa60089(0x1d6)),
+      _0x546f71 = document[_0x3bade4(0x127)](_0xa60089(0x202)),
+      _0x2218e1 = document[_0xa60089(0x21c)](_0xa60089(0x1ba)),
+      _0x442d8d = document[_0xa60089(0x21c)](_0xa60089(0x221)),
+      _0x1f7e20 = document[_0xa60089(0x23d)](_0xa60089(0x1f5));
+    let _0x2f2bbc = null,
+      _0x5d175a = [],
+      _0x53c7fa =
+        _0xa60089(0x232) +
+        _0x1bee50[_0x3bade4(0x198)] +
+        ",\x20" +
+        _0x3e1ba8[_0xa60089(0x1de)] +
+        ")";
+    (_0x3bca0b[_0xa60089(0x21f)][_0xa60089(0x1c6)] =
+      _0x1bee50[_0xa60089(0x1de)]),
+      (_0x546f71[_0xa60089(0x21f)][_0x3bade4(0x162)] =
+        _0x3e1ba8[_0x3bade4(0x198)]),
+      _0x1bee50[_0xa60089(0x1e4)](_0xa60089(0x1db), () => {
+        const _0x3cf4b2 = _0x3bade4,
+          _0x1571b0 = _0xa60089;
+        (_0x3bca0b[_0x1571b0(0x21f)][_0x1571b0(0x1c6)] =
+          _0x1bee50[_0x3cf4b2(0x198)]),
+          _0x196a13();
+      }),
+      _0x3e1ba8[_0xa60089(0x1e4)](_0xa60089(0x1db), () => {
+        const _0xaa1c47 = _0x3bade4,
+          _0x415da6 = _0xa60089;
+        (_0x546f71[_0x415da6(0x21f)][_0x415da6(0x1c6)] =
+          _0x3e1ba8[_0xaa1c47(0x198)]),
+          _0x196a13();
+      });
+    function _0x196a13() {
+      const _0x195fd7 = _0x3bade4,
+        _0x41c016 = _0xa60089,
+        _0x3b2a0d =
+          _0x41c016(0x232) +
+          _0x1bee50[_0x195fd7(0x198)] +
+          ",\x20" +
+          _0x3e1ba8[_0x41c016(0x1de)] +
+          ")";
+      _0x4dbb35(_0x3b2a0d);
+    }
+    _0x219cbb["addEventListener"](_0xa60089(0x1ff), _0x4f957e),
+      _0x4b2c38[_0x3852d9(0x240)](_0xa60089(0x1ff), _0x4f957e),
+      _0x39929e[_0xa60089(0x1e4)](_0x3852d9(0x251), (_0x58f59b) => {
+        const _0x1f909c = _0xa60089;
+        _0x58f59b[_0x1f909c(0x1d2)] === _0x1f909c(0x1fb) && _0x4f957e();
+      }),
+      _0x518cbb[_0xa60089(0x1e4)](_0xa60089(0x1ee), (_0x26064d) => {
+        const _0x12de8e = _0xa60089;
+        _0x26064d[_0x12de8e(0x1d2)] === _0x12de8e(0x1fb) && _0x4f957e();
+      }),
+      _0x2e43b6[_0xa60089(0x1e4)](_0xa60089(0x1ff), () => {
+        const _0x447602 = _0x3bade4,
+          _0x1fd194 = _0xa60089;
+        (_0x5c4834[_0x1fd194(0x1de)] = _0x36e7c2[_0x1fd194(0x1fe)]),
+          _0x55d2c1[_0x1fd194(0x1c0)][_0x1fd194(0x23c)](_0x1fd194(0x241)),
+          _0x2e43b6[_0x1fd194(0x1c0)][_0x447602(0x1a0)](_0x447602(0x19b));
+      }),
+      _0x3e7728[_0xa60089(0x1e4)](_0xa60089(0x1ff), () => {
+        const _0x4b267a = _0x3bade4,
+          _0x5412c5 = _0xa60089;
+        (_0x36e7c2[_0x5412c5(0x1fe)] = _0x5c4834[_0x5412c5(0x1de)]),
+          _0x55d2c1[_0x5412c5(0x1c0)][_0x5412c5(0x215)](_0x5412c5(0x241)),
+          _0x2e43b6[_0x5412c5(0x1c0)][_0x5412c5(0x23c)](_0x4b267a(0x19b)),
+          (_0xa88096[_0x5412c5(0x21a)] = ![]),
+          _0x40b39b();
+      }),
+      _0x113666[_0x3bade4(0x1a4)](_0xa60089(0x1ff), () => {
+        const _0x3ce5be = _0xa60089;
+        _0x55d2c1[_0x3ce5be(0x1c0)][_0x3ce5be(0x215)](_0x3ce5be(0x241)),
+          _0x2e43b6[_0x3ce5be(0x1c0)][_0x3ce5be(0x23c)](_0x3ce5be(0x241));
+      }),
+      _0xa88096[_0xa60089(0x1e4)](_0x3bade4(0x169), _0x3b6a88),
+      _0x1327dd[_0xa60089(0x235)]((_0x14bc2a) => {
+        const _0x4da70d = _0xa60089;
+        _0x14bc2a[_0x4da70d(0x1e4)](_0x4da70d(0x1ff), () => {
+          const _0x238501 = _0x5b71,
+            _0x3299ae = _0x4da70d;
+          _0x1327dd[_0x3299ae(0x235)]((_0x116884) =>
+            _0x116884[_0x3299ae(0x1c0)][_0x3299ae(0x23c)](_0x3299ae(0x22c))
+          ),
+            _0x14bc2a[_0x3299ae(0x1c0)][_0x3299ae(0x215)](_0x3299ae(0x22c));
+          const _0x30a9fd = _0x14bc2a[_0x3299ae(0x1e6)](_0x3299ae(0x1ea));
+          _0x4dbb35(_0x30a9fd);
+          const _0x29af2d = _0x30a9fd[_0x238501(0x166)](/#[a-fA-F0-9]{6}/g);
+          _0x29af2d &&
+            _0x29af2d[_0x238501(0x11f)] >= 0x2 &&
+            ((_0x1bee50[_0x3299ae(0x1de)] = _0x29af2d[0x0]),
+            (_0x3e1ba8[_0x3299ae(0x1de)] = _0x29af2d[0x1]),
+            (_0x3bca0b[_0x3299ae(0x21f)][_0x3299ae(0x1c6)] = _0x29af2d[0x0]),
+            (_0x546f71[_0x3299ae(0x21f)][_0x238501(0x162)] = _0x29af2d[0x1]));
+        });
+      }),
+      _0x2218e1[_0x3852d9(0x240)](_0xa60089(0x1ff), () => {
+        _0x2341a4();
+      });
+    function _0x2341a4() {
+      const _0x5b7689 = _0x3852d9,
+        _0x3fedb4 = _0x3bade4,
+        _0x2c85c3 = _0xa60089;
+      if (
+        _0x5d175a &&
+        Array[_0x2c85c3(0x1c7)](_0x5d175a) &&
+        _0x5d175a[_0x2c85c3(0x1c4)] > 0x0
+      ) {
+        const _0x65b7f1 =
+            Math[_0x2c85c3(0x203)](Math[_0x2c85c3(0x1c5)]() * 0x3) + 0x1,
+          _0x43555c = Math[_0x2c85c3(0x237)](
+            0x0,
+            _0x5d175a[_0x3fedb4(0x11f)] - _0x65b7f1
+          ),
+          _0x582272 = Math[_0x2c85c3(0x203)](
+            Math[_0x5b7689(0x1e9)]() * (_0x43555c + 0x1)
+          ),
+          _0x216a62 = _0x5d175a[_0x2c85c3(0x1e1)](
+            _0x582272,
+            _0x582272 + _0x65b7f1
+          );
+        (_0x36e7c2[_0x2c85c3(0x1fe)] = _0x216a62[_0x2c85c3(0x22a)]("\x0a")),
+          _0x40b39b();
+      } else
+        typeof _0x5d175a === _0x2c85c3(0x21d) &&
+          ((_0x36e7c2[_0x5b7689(0x23d)] = _0x5d175a), _0x40b39b());
+    }
+    async function _0x4f957e() {
+      const _0x48db86 = _0x3852d9,
+        _0x152d47 = _0x3bade4,
+        _0x409347 = _0xa60089,
+        _0x151f59 = _0x442d8d[_0x409347(0x1c0)][_0x409347(0x213)](
+          _0x409347(0x241)
+        )
+          ? _0x518cbb[_0x409347(0x1de)][_0x409347(0x20a)]()
+          : _0x39929e[_0x409347(0x1de)][_0x409347(0x20a)]();
+      if (!_0x151f59) {
+        _0x393ef3(_0x211d60, _0x409347(0x1be));
+        return;
+      }
+      _0x123928[_0x409347(0x1c0)][_0x409347(0x23c)](_0x409347(0x241)),
+        _0x5b7463[_0x409347(0x1c0)][_0x409347(0x215)](_0x409347(0x241));
+      try {
+        const _0x45031d = _0x6b5ecd(_0x151f59);
+        if (!_0x45031d) {
+          _0x393ef3(_0x211d60, _0x409347(0x1e7)),
+            _0x123928[_0x409347(0x1c0)][_0x409347(0x215)](_0x409347(0x241)),
+            _0x442d8d[_0x409347(0x1c0)][_0x409347(0x23c)](_0x409347(0x241));
+          return;
+        }
+        const _0x5a2a82 = await _0x4fa9c4(_0x45031d);
+        if (!_0x5a2a82) {
+          _0x393ef3(_0x211d60, _0x409347(0x1bb)),
+            _0x123928[_0x409347(0x1c0)][_0x409347(0x215)](_0x409347(0x241)),
+            _0x442d8d[_0x409347(0x1c0)][_0x409347(0x23c)](_0x409347(0x241));
+          return;
+        }
+        _0x2f2bbc = _0x5a2a82;
+        try {
+          const _0x27ab7a = await _0x207e44(
+            _0x5a2a82[_0x152d47(0x161)],
+            _0x5a2a82[_0x152d47(0x195)][0x0][_0x409347(0x20d)]
+          );
+          if (!_0x27ab7a) throw new Error(_0x409347(0x1fd));
+          (_0x5d175a = _0x27ab7a),
+            _0x2341a4(),
+            _0x23a227(_0x5a2a82),
+            _0x442d8d[_0x409347(0x1c0)][_0x152d47(0x1a0)](_0x409347(0x241)),
+            _0x1f7e20[_0x409347(0x1c0)][_0x152d47(0x17f)](_0x152d47(0x19b)),
+            _0x123928["classList"][_0x409347(0x215)](_0x409347(0x241)),
+            _0x5b7463[_0x409347(0x1c0)][_0x409347(0x23c)](_0x409347(0x241));
+        } catch (_0x104f50) {
+          _0x393ef3(
+            _0x211d60,
+            _0x152d47(0x1a5) +
+              _0x5a2a82[_0x409347(0x20d)] +
+              _0x152d47(0x1a7) +
+              _0x5a2a82[_0x409347(0x22d)][0x0][_0x409347(0x20d)]
+          ),
+            (_0x5d175a = _0x409347(0x216)),
+            (_0x36e7c2[_0x409347(0x1fe)] = _0x152d47(0x15f)),
+            _0x23a227(_0x5a2a82),
+            _0x442d8d[_0x409347(0x1c0)][_0x409347(0x215)](_0x152d47(0x19b)),
+            _0x1f7e20[_0x409347(0x1c0)][_0x152d47(0x17f)](_0x409347(0x241)),
+            _0x123928[_0x152d47(0x1a1)][_0x409347(0x215)](_0x152d47(0x19b)),
+            _0x5b7463[_0x409347(0x1c0)][_0x409347(0x23c)](_0x409347(0x241));
+        }
+      } catch (_0x22bb51) {
+        console[_0x409347(0x1f4)](_0x409347(0x22e), _0x22bb51),
+          _0x393ef3(_0x211d60, _0x409347(0x218) + _0x22bb51[_0x409347(0x1f2)]),
+          _0x123928[_0x409347(0x1c0)][_0x409347(0x215)](_0x409347(0x241)),
+          _0x442d8d[_0x48db86(0x1c8)][_0x409347(0x23c)](_0x409347(0x241));
       }
     }
-
-    return null;
-  }
-
-  async function getTrackInfo(trackId) {
-    try {
-      // Use our backend API to fetch track info
-      const response = await fetch(`/api/spotify/track/${trackId}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch track information");
+    function _0x6b5ecd(_0x532c77) {
+      const _0x351cb3 = _0xa60089,
+        _0x31a365 = [
+          /spotify:track:([a-zA-Z0-9]+)/,
+          /open.spotify.com\/track\/([a-zA-Z0-9]+)/,
+          /^([a-zA-Z0-9]+)$/,
+        ];
+      for (const _0x6b44ec of _0x31a365) {
+        const _0x298f12 = _0x532c77[_0x351cb3(0x1cd)](_0x6b44ec);
+        if (_0x298f12 && _0x298f12[0x1]) return _0x298f12[0x1];
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching track info:", error);
-      throw error;
-    }
-  }
-
-  async function getLyrics(title, artist) {
-    try {
-      // Use our backend API to fetch lyrics
-      const response = await fetch(
-        `/api/lyrics/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch lyrics");
-      }
-
-      const data = await response.json();
-
-      if (!data.lyrics || data.lyrics.trim() === "") {
-        throw new Error("No lyrics found");
-      }
-
-      // Process the lyrics
-      return processLyrics(data.lyrics);
-    } catch (error) {
-      console.error("Error fetching lyrics:", error);
       return null;
     }
-  }
-
-  function processLyrics(fullLyrics) {
-    if (!fullLyrics) return null;
-
-    // Clean up the lyrics
-    const cleanedLyrics = fullLyrics
-      .replace(/\[.*?\]/g, "") // Remove bracketed text like [Chorus]
-      .replace(/\(.*?\)/g, "") // Remove parenthesized text
-      .trim();
-
-    // Split into individual lines and filter out empty lines
-    const allLines = cleanedLyrics
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-
-    return allLines.length > 0 ? allLines : null;
-  }
-
-  function updateCard(trackData) {
-    // Update card elements with track data
-    albumArt.src = trackData.album.images[0].url || "assets/404.jpg";
-    trackName.textContent = trackData.name;
-    artistName.textContent = trackData.artists
-      .map((artist) => artist.name)
-      .join(", ");
-
-    // Set a random gradient from the available options
-    const randomIndex = Math.floor(Math.random() * gradientItems.length);
-    const randomGradient =
-      gradientItems[randomIndex].getAttribute("data-gradient");
-    applyGradient(randomGradient);
-
-    // Update color inputs to match the random gradient
-    const colors = randomGradient.match(/#[a-fA-F0-9]{6}/g);
-    if (colors && colors.length >= 2) {
-      color1Input.value = colors[0];
-      color2Input.value = colors[1];
-      color1Preview.style.backgroundColor = colors[0];
-      color2Preview.style.backgroundColor = colors[1];
+    async function _0x4fa9c4(_0x1b4a20) {
+      const _0x4fcdf3 = _0x3bade4,
+        _0x5e2f26 = _0xa60089;
+      try {
+        const _0x252a8a = await fetch(_0x4fcdf3(0x133) + _0x1b4a20);
+        if (!_0x252a8a["ok"]) throw new Error(_0x4fcdf3(0x12d));
+        return await _0x252a8a[_0x4fcdf3(0x12f)]();
+      } catch (_0x114ead) {
+        console[_0x5e2f26(0x1f4)](_0x5e2f26(0x1f3), _0x114ead);
+        throw _0x114ead;
+      }
     }
-
-    // Mark the selected gradient as active
-    gradientItems.forEach((item) => item.classList.remove("active"));
-    gradientItems[randomIndex].classList.add("active");
-
-    // Adjust card height based on lyrics length
-    adjustCardHeight();
-  }
-
-  function adjustCardHeight() {
-    // Get elements
-    const card = document.querySelector(".card");
-    const cardBackground = document.querySelector(".card-background");
-    const lyricsLength = lyricsText.textContent.length;
-    const lineCount = (lyricsText.textContent.match(/\n/g) || []).length + 1;
-
-    // Reset to default first
-    card.style.height = "auto";
-
-    // Calculate appropriate height based on content
-    let minHeight = 300; // Base minimum height
-
-    // Add height based on number of lines and length
-    if (lineCount > 3) {
-      minHeight += (lineCount - 3) * 30; // Add 30px per additional line
-    }
-
-    if (lyricsLength > 100) {
-      minHeight += Math.min(200, (lyricsLength - 100) / 2); // Add up to 200px based on length
-    }
-
-    // Set minimum height
-    card.style.minHeight = `${minHeight}px`;
-
-    // Adjust card background to match
-    if (minHeight > 500) {
-      // If card is tall, adjust aspect ratio of background
-      cardBackground.style.aspectRatio = "auto";
-      cardBackground.style.minHeight = `${minHeight + 100}px`; // Add padding
-    } else {
-      // For shorter content, maintain 9:16 aspect ratio
-      cardBackground.style.aspectRatio = "9/16";
-      cardBackground.style.minHeight = "600px";
-    }
-  }
-
-  function applyGradient(gradient) {
-    lyricsCard.style.background = gradient;
-    cardBackground.style.background = gradient;
-    downloadBtn.style.background = gradient;
-    refreshLyricsBtn.style.background = gradient;
-    editLyricsBtn.style.background = gradient;
-    currentGradient = gradient;
-  }
-
-  function downloadCard() {
-    // Show a loading notification
-    showNotification(
-      errorNotification,
-      "<i class='fas fa-spinner fa-spin'></i> Generating image..."
-    );
-
-    // 1) Get the .card-background element dimensions
-    const cardBackgroundEl = document.querySelector(".card-background");
-    const cardBackgroundRect = cardBackgroundEl.getBoundingClientRect();
-
-    // CHANGE #1: Force 3× scale for higher-resolution output
-    const scale = 3;
-
-    // Create a canvas matching the .card-background size * scale
-    const canvas = document.createElement("canvas");
-    canvas.width = cardBackgroundRect.width * scale;
-    canvas.height = cardBackgroundRect.height * scale;
-
-    const ctx = canvas.getContext("2d");
-
-    // Scale all drawing operations for crisp text/images
-    ctx.scale(scale, scale);
-
-    // 2) Fill entire canvas with the same 135° gradient used on the page
-    const gradientColors = currentGradient.match(/#[a-fA-F0-9]{6}/g);
-    if (gradientColors && gradientColors.length >= 2) {
-      // For a 135° CSS gradient, we create a linear gradient from top-left to bottom-right
-      const gradient = ctx.createLinearGradient(
-        0,
-        0,
-        cardBackgroundRect.width,
-        cardBackgroundRect.height
-      );
-      gradient.addColorStop(0, gradientColors[0]);
-      gradient.addColorStop(1, gradientColors[1]);
-      ctx.fillStyle = gradient;
-    } else {
-      // Fallback if we can't parse the gradient
-      ctx.fillStyle = "#F5A9C7";
-    }
-    ctx.fillRect(0, 0, cardBackgroundRect.width, cardBackgroundRect.height);
-
-    // 3) Draw the smaller .card (with shadow) on top of the background
-    // Grab the .card element and find its position relative to .card-background
-    const cardEl = document.querySelector(".card");
-    const cardRect = cardEl.getBoundingClientRect();
-
-    // cardX/cardY are offsets inside the .card-background
-    const cardX = cardRect.left - cardBackgroundRect.left;
-    const cardY = cardRect.top - cardBackgroundRect.top;
-
-    // Replicate the same shadow used in the DOM
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
-    ctx.shadowBlur = 20;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 8;
-
-    // Draw the rounded rectangle for the card
-    roundRect(ctx, cardX, cardY, cardRect.width, cardRect.height, 12);
-
-    // Create the same gradient for the card's fill
-    if (gradientColors && gradientColors.length >= 2) {
-      const cardGradient = ctx.createLinearGradient(
-        cardX,
-        cardY,
-        cardX + cardRect.width,
-        cardY + cardRect.height
-      );
-      cardGradient.addColorStop(0, gradientColors[0]);
-      cardGradient.addColorStop(1, gradientColors[1]);
-      ctx.fillStyle = cardGradient;
-    } else {
-      ctx.fillStyle = "#F5A9C7";
-    }
-
-    ctx.fill();
-    ctx.restore();
-
-    // 4) Draw the album art
-    const artSize = 50;
-    const contentPadding = 25;
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = albumArt.src || "assets/404.jpg";
-
-    // We'll do everything else (track name, artist name, lyrics, Spotify logo) once album art loads
-    img.onload = function () {
-      // Clip and draw the album art
-      ctx.save();
-      roundRect(
-        ctx,
-        cardX + contentPadding,
-        cardY + contentPadding,
-        artSize,
-        artSize,
-        8
-      );
-      ctx.clip();
-      ctx.drawImage(
-        img,
-        cardX + contentPadding,
-        cardY + contentPadding,
-        artSize,
-        artSize
-      );
-      ctx.restore();
-
-      // Track info
-      ctx.fillStyle = "black";
-      ctx.font = "bold 16px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        trackName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 15,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        20
-      );
-
-      ctx.font = "14px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        artistName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 40,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        18
-      );
-
-      // 5) Draw the lyrics with word wrapping
-      ctx.font = "bold 24px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        lyricsText.textContent,
-        cardX + contentPadding,
-        cardY + contentPadding + 100,
-        cardRect.width - contentPadding * 2,
-        30
-      );
-
-      // 6) Draw the Spotify logo (local asset to avoid CORS)
-      const logoImg = new Image();
-      logoImg.crossOrigin = "Anonymous";
-      logoImg.src = "assets/spotify-logo.png"; // <--- Local path
-
-      logoImg.onload = function () {
-        // Place the logo at the bottom-left inside the card
-        const logoHeight = 24;
-        // Adjust width to maintain aspect ratio
-        const logoWidth = logoHeight * (logoImg.width / logoImg.height);
-
-        ctx.drawImage(
-          logoImg,
-          cardX + contentPadding,
-          cardY + cardRect.height - contentPadding - logoHeight,
-          logoWidth,
-          logoHeight
+    async function _0x207e44(_0x74e4e, _0x320c02) {
+      const _0x5925d0 = _0x3bade4,
+        _0x3e61c9 = _0xa60089;
+      try {
+        const _0x56f67e = await fetch(
+          _0x3e61c9(0x1d4) +
+            encodeURIComponent(_0x320c02) +
+            "/" +
+            encodeURIComponent(_0x74e4e)
         );
-
-        // Finally, trigger the download
-        finishDownload(canvas);
-      };
-
-      // If logo fails to load, still finish download
-      logoImg.onerror = function () {
-        finishDownload(canvas);
-      };
-    };
-
-    // If album art fails to load, draw a placeholder and still proceed
-    img.onerror = function () {
-      // Gray box for missing album art
-      ctx.fillStyle = "#333";
-      roundRect(
-        ctx,
-        cardX + contentPadding,
-        cardY + contentPadding,
-        artSize,
-        artSize,
-        8
-      );
-      ctx.fill();
-
-      // Track info
-      ctx.fillStyle = "black";
-      ctx.font = "bold 16px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        trackName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 15,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        20
-      );
-
-      ctx.font = "14px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        artistName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 40,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        18
-      );
-
-      // Lyrics
-      ctx.font = "bold 24px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        lyricsText.textContent,
-        cardX + contentPadding,
-        cardY + contentPadding + 100,
-        cardRect.width - contentPadding * 2,
-        30
-      );
-
-      // No logo, just finish
-      finishDownload(canvas);
-    };
-
-    // Helper: finalize download
-    function finishDownload(canvasEl) {
-      // Create download link
-      const link = document.createElement("a");
-      const songNameText = trackName.textContent || "SpotiCard";
-      link.download = `${songNameText} - SpotiCard.png`;
-      link.href = canvasEl.toDataURL("image/png");
-      link.click();
-
-      // Show success notification
-      showNotification(
-        errorNotification,
-        "<i class='fas fa-check-circle'></i> Image downloaded successfully!"
-      );
-    }
-  }
-
-  // ------------- Helper Functions -------------- //
-
-  function roundRect(ctx, x, y, width, height, radius) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-  }
-
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-    // Split by line breaks first to preserve intentional breaks
-    const paragraphs = text.split("\n");
-    let totalLines = 0;
-
-    // Process each paragraph
-    for (let i = 0; i < paragraphs.length; i++) {
-      if (paragraphs[i].trim() === "") {
-        // Empty line, just advance y position
-        y += lineHeight;
-        totalLines++;
-        continue;
-      }
-
-      // Split paragraph into words
-      const words = paragraphs[i].split(" ");
-      let line = "";
-
-      // Process words in this paragraph
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + " ";
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-
-        if (testWidth > maxWidth && n > 0) {
-          ctx.fillText(line, x, y);
-          line = words[n] + " ";
-          y += lineHeight;
-          totalLines++;
-        } else {
-          line = testLine;
-        }
-      }
-
-      // Draw the remaining line in this paragraph
-      if (line.trim() !== "") {
-        ctx.fillText(line, x, y);
-
-        // Only add line height if not the last paragraph
-        if (i < paragraphs.length - 1) {
-          y += lineHeight;
-          totalLines++;
-        }
+        if (!_0x56f67e["ok"]) throw new Error(_0x3e61c9(0x231));
+        const _0x18c683 = await _0x56f67e[_0x3e61c9(0x240)]();
+        if (
+          !_0x18c683[_0x3e61c9(0x226)] ||
+          _0x18c683[_0x3e61c9(0x226)][_0x3e61c9(0x20a)]() === ""
+        )
+          throw new Error(_0x3e61c9(0x1fd));
+        return _0x1b1c2a(_0x18c683[_0x5925d0(0x123)]);
+      } catch (_0x26a7e1) {
+        return console[_0x3e61c9(0x1f4)](_0x3e61c9(0x20e), _0x26a7e1), null;
       }
     }
-  }
-
-  function showNotification(element, message) {
-    element.querySelector("p").innerHTML = message; // Changed from textContent to innerHTML to support icons
-    element.classList.remove("hidden");
-    element.classList.add("show");
-
-    // Hide notification after 4 seconds
-    setTimeout(() => {
-      element.classList.remove("show");
-      element.classList.add("fade-out");
-
-      // After animation completes, hide the element
-      setTimeout(() => {
-        element.classList.add("hidden");
-        element.classList.remove("fade-out");
-      }, 300);
-    }, 4000);
-  }
-});
+    function _0x1b1c2a(_0x12bda6) {
+      const _0x222a9f = _0x3bade4,
+        _0x163e15 = _0xa60089;
+      if (!_0x12bda6) return null;
+      const _0x54cc9a = _0x12bda6[_0x163e15(0x1f1)](/\[.*?\]/g, "")
+          [_0x163e15(0x1f1)](/\(.*?\)/g, "")
+          [_0x222a9f(0x146)](),
+        _0x57ef6c = _0x54cc9a[_0x222a9f(0x18a)]("\x0a")
+          [_0x163e15(0x1da)]((_0x13c8f0) => _0x13c8f0[_0x222a9f(0x146)]())
+          [_0x163e15(0x229)]((_0x2b69b3) => _0x2b69b3[_0x222a9f(0x11f)] > 0x0);
+      return _0x57ef6c[_0x163e15(0x1c4)] > 0x0 ? _0x57ef6c : null;
+    }
+    function _0x23a227(_0x335dca) {
+      const _0x97e1fd = _0x3852d9,
+        _0x2e480a = _0x3bade4,
+        _0x1cbbb2 = _0xa60089;
+      (_0x34f32c[_0x1cbbb2(0x1e9)] =
+        _0x335dca[_0x1cbbb2(0x1b9)][_0x1cbbb2(0x239)][0x0][_0x1cbbb2(0x223)] ||
+        _0x1cbbb2(0x236)),
+        (_0x31ce89[_0x1cbbb2(0x1fe)] = _0x335dca[_0x1cbbb2(0x20d)]),
+        (_0x36b3aa[_0x1cbbb2(0x1fe)] = _0x335dca[_0x1cbbb2(0x22d)]
+          [_0x2e480a(0x15a)]((_0x3788ca) => _0x3788ca[_0x1cbbb2(0x20d)])
+          [_0x1cbbb2(0x22a)](",\x20"));
+      const _0x11eec8 = Math[_0x1cbbb2(0x203)](
+          Math[_0x97e1fd(0x1e9)]() * _0x1327dd[_0x2e480a(0x11f)]
+        ),
+        _0x16509f = _0x1327dd[_0x11eec8][_0x1cbbb2(0x1e6)](_0x1cbbb2(0x1ea));
+      _0x4dbb35(_0x16509f);
+      const _0x111479 = _0x16509f[_0x1cbbb2(0x1cd)](/#[a-fA-F0-9]{6}/g);
+      _0x111479 &&
+        _0x111479[_0x1cbbb2(0x1c4)] >= 0x2 &&
+        ((_0x1bee50[_0x1cbbb2(0x1de)] = _0x111479[0x0]),
+        (_0x3e1ba8[_0x1cbbb2(0x1de)] = _0x111479[0x1]),
+        (_0x3bca0b[_0x2e480a(0x1a6)][_0x1cbbb2(0x1c6)] = _0x111479[0x0]),
+        (_0x546f71[_0x1cbbb2(0x21f)][_0x1cbbb2(0x1c6)] = _0x111479[0x1])),
+        _0x1327dd[_0x1cbbb2(0x235)]((_0xbb4ac9) =>
+          _0xbb4ac9[_0x1cbbb2(0x1c0)][_0x1cbbb2(0x23c)](_0x2e480a(0x199))
+        ),
+        _0x1327dd[_0x11eec8][_0x1cbbb2(0x1c0)][_0x1cbbb2(0x215)](
+          _0x1cbbb2(0x22c)
+        ),
+        _0x40b39b();
+    }
+    function _0x40b39b() {
+      const _0x863aa6 = _0x3852d9,
+        _0x1760a8 = _0x3bade4,
+        _0x111e55 = _0xa60089,
+        _0x3c1098 = document[_0x111e55(0x23d)](_0x111e55(0x1bc)),
+        _0x5d150f = document[_0x111e55(0x23d)](_0x111e55(0x1f0)),
+        _0x29ce16 = _0x36e7c2[_0x863aa6(0x23d)][_0x111e55(0x1c4)],
+        _0x143018 =
+          (_0x36e7c2[_0x1760a8(0x155)][_0x111e55(0x1cd)](/\n/g) || [])[
+            _0x111e55(0x1c4)
+          ] + 0x1;
+      _0x3c1098[_0x111e55(0x21f)][_0x863aa6(0x215)] = _0x111e55(0x1ec);
+      let _0x208d3b = 0x12c;
+      _0x143018 > 0x3 && (_0x208d3b += (_0x143018 - 0x3) * 0x1e),
+        _0x29ce16 > 0x64 &&
+          (_0x208d3b += Math[_0x111e55(0x1c2)](0xc8, (_0x29ce16 - 0x64) / 0x2)),
+        (_0x3c1098[_0x1760a8(0x1a6)][_0x111e55(0x219)] = _0x208d3b + "px"),
+        _0x208d3b > 0x1f4
+          ? ((_0x5d150f[_0x111e55(0x21f)]["aspectRatio"] = _0x111e55(0x1ec)),
+            (_0x5d150f[_0x111e55(0x21f)][_0x111e55(0x219)] =
+              _0x208d3b + 0x64 + "px"))
+          : ((_0x5d150f[_0x111e55(0x21f)][_0x111e55(0x214)] = _0x111e55(0x212)),
+            (_0x5d150f[_0x1760a8(0x1a6)][_0x111e55(0x219)] = _0x111e55(0x1dc)));
+    }
+    function _0x4dbb35(_0x1ae2a7) {
+      const _0x4a0b02 = _0x3bade4,
+        _0x3c6df7 = _0xa60089;
+      (_0x554c26[_0x3c6df7(0x21f)][_0x4a0b02(0x163)] = _0x1ae2a7),
+        (_0x41ef6f[_0x4a0b02(0x1a6)][_0x3c6df7(0x20f)] = _0x1ae2a7),
+        (_0xa88096[_0x3c6df7(0x21f)][_0x3c6df7(0x20f)] = _0x1ae2a7),
+        (_0x2218e1[_0x3c6df7(0x21f)][_0x3c6df7(0x20f)] = _0x1ae2a7),
+        (_0x2e43b6[_0x3c6df7(0x21f)][_0x4a0b02(0x163)] = _0x1ae2a7),
+        (_0x53c7fa = _0x1ae2a7);
+    }
+    function _0x3b6a88() {
+      const _0x365ea8 = _0x3852d9,
+        _0x19de3c = _0x3bade4,
+        _0x3a7a93 = _0xa60089;
+      _0x393ef3(_0x211d60, _0x3a7a93(0x1b5));
+      const _0x4488db = document["querySelector"](_0x19de3c(0x14e)),
+        _0xbbfcac = _0x4488db[_0x19de3c(0x140)](),
+        _0x5aaf69 = 0x3,
+        _0x9281ad = document[_0x19de3c(0x158)](_0x3a7a93(0x220));
+      (_0x9281ad[_0x19de3c(0x1a2)] = _0xbbfcac[_0x3a7a93(0x22b)] * _0x5aaf69),
+        (_0x9281ad[_0x19de3c(0x19f)] = _0xbbfcac[_0x3a7a93(0x1c8)] * _0x5aaf69);
+      const _0xa36b2d = _0x9281ad[_0x19de3c(0x129)]("2d");
+      _0xa36b2d[_0x3a7a93(0x1d7)](_0x5aaf69, _0x5aaf69);
+      const _0x4ddcf5 = _0x53c7fa[_0x3a7a93(0x1cd)](/#[a-fA-F0-9]{6}/g);
+      if (_0x4ddcf5 && _0x4ddcf5[_0x3a7a93(0x1c4)] >= 0x2) {
+        const _0x12a9c6 = _0xa36b2d[_0x3a7a93(0x1fc)](
+          0x0,
+          0x0,
+          _0xbbfcac[_0x3a7a93(0x22b)],
+          _0xbbfcac[_0x3a7a93(0x1c8)]
+        );
+        _0x12a9c6[_0x19de3c(0x19d)](0x0, _0x4ddcf5[0x0]),
+          _0x12a9c6[_0x3a7a93(0x204)](0x1, _0x4ddcf5[0x1]),
+          (_0xa36b2d[_0x3a7a93(0x1c9)] = _0x12a9c6);
+      } else _0xa36b2d[_0x19de3c(0x15d)] = _0x3a7a93(0x1f6);
+      _0xa36b2d[_0x3a7a93(0x1ed)](
+        0x0,
+        0x0,
+        _0xbbfcac[_0x3a7a93(0x22b)],
+        _0xbbfcac[_0x3a7a93(0x1c8)]
+      );
+      const _0x5134db = document[_0x3a7a93(0x23d)](_0x3a7a93(0x1bc)),
+        _0x4c6906 = _0x5134db[_0x365ea8(0x22d)](),
+        _0x422322 = _0x4c6906[_0x19de3c(0x134)] - _0xbbfcac[_0x19de3c(0x134)],
+        _0x1ad050 = _0x4c6906[_0x3a7a93(0x22f)] - _0xbbfcac[_0x19de3c(0x170)];
+      _0xa36b2d[_0x3a7a93(0x1e8)](),
+        (_0xa36b2d[_0x3a7a93(0x225)] = _0x3a7a93(0x23a)),
+        (_0xa36b2d[_0x3a7a93(0x206)] = 0x14),
+        (_0xa36b2d[_0x3a7a93(0x1bd)] = 0x0),
+        (_0xa36b2d[_0x3a7a93(0x1f7)] = 0x8),
+        _0x52c9fc(
+          _0xa36b2d,
+          _0x422322,
+          _0x1ad050,
+          _0x4c6906[_0x19de3c(0x1a2)],
+          _0x4c6906[_0x3a7a93(0x1c8)],
+          0xc
+        );
+      if (_0x4ddcf5 && _0x4ddcf5["length"] >= 0x2) {
+        const _0x193609 = _0xa36b2d[_0x3a7a93(0x1fc)](
+          _0x422322,
+          _0x1ad050,
+          _0x422322 + _0x4c6906[_0x3a7a93(0x22b)],
+          _0x1ad050 + _0x4c6906[_0x19de3c(0x19f)]
+        );
+        _0x193609[_0x3a7a93(0x204)](0x0, _0x4ddcf5[0x0]),
+          _0x193609[_0x3a7a93(0x204)](0x1, _0x4ddcf5[0x1]),
+          (_0xa36b2d[_0x3a7a93(0x1c9)] = _0x193609);
+      } else _0xa36b2d[_0x3a7a93(0x1c9)] = _0x3a7a93(0x1f6);
+      _0xa36b2d[_0x3a7a93(0x208)](), _0xa36b2d[_0x19de3c(0x16c)]();
+      const _0x44d9b6 = 0x32,
+        _0x16c7fc = 0x19,
+        _0x2b2df3 = new Image();
+      (_0x2b2df3[_0x19de3c(0x147)] = _0x3a7a93(0x1ca)),
+        (_0x2b2df3[_0x365ea8(0x235)] =
+          _0x34f32c[_0x3a7a93(0x1e9)] || _0x3a7a93(0x236)),
+        (_0x2b2df3[_0x19de3c(0x11e)] = function () {
+          const _0x6d2f3 = _0x365ea8,
+            _0x3c584d = _0x19de3c,
+            _0x8e74a2 = _0x3a7a93;
+          _0xa36b2d[_0x8e74a2(0x1e8)](),
+            _0x52c9fc(
+              _0xa36b2d,
+              _0x422322 + _0x16c7fc,
+              _0x1ad050 + _0x16c7fc,
+              _0x44d9b6,
+              _0x44d9b6,
+              0x8
+            ),
+            _0xa36b2d[_0x8e74a2(0x1b6)](),
+            _0xa36b2d[_0x8e74a2(0x224)](
+              _0x2b2df3,
+              _0x422322 + _0x16c7fc,
+              _0x1ad050 + _0x16c7fc,
+              _0x44d9b6,
+              _0x44d9b6
+            ),
+            _0xa36b2d[_0x8e74a2(0x1fa)](),
+            (_0xa36b2d[_0x8e74a2(0x1c9)] = "black"),
+            (_0xa36b2d[_0x8e74a2(0x23b)] = _0x6d2f3(0x1e3)),
+            _0x151769(
+              _0xa36b2d,
+              _0x31ce89[_0x8e74a2(0x1fe)],
+              _0x422322 + _0x16c7fc + _0x44d9b6 + 0xf,
+              _0x1ad050 + _0x16c7fc + 0xf,
+              _0x4c6906[_0x8e74a2(0x22b)] - _0x16c7fc * 0x2 - _0x44d9b6 - 0xf,
+              0x14
+            ),
+            (_0xa36b2d[_0x3c584d(0x14a)] = _0x8e74a2(0x1d5)),
+            _0x151769(
+              _0xa36b2d,
+              _0x36b3aa[_0x8e74a2(0x1fe)],
+              _0x422322 + _0x16c7fc + _0x44d9b6 + 0xf,
+              _0x1ad050 + _0x16c7fc + 0x28,
+              _0x4c6906[_0x8e74a2(0x22b)] - _0x16c7fc * 0x2 - _0x44d9b6 - 0xf,
+              0x12
+            ),
+            (_0xa36b2d[_0x8e74a2(0x23b)] = _0x6d2f3(0x242)),
+            _0x151769(
+              _0xa36b2d,
+              _0x36e7c2[_0x8e74a2(0x1fe)],
+              _0x422322 + _0x16c7fc,
+              _0x1ad050 + _0x16c7fc + 0x64,
+              _0x4c6906[_0x8e74a2(0x22b)] - _0x16c7fc * 0x2,
+              0x1e
+            );
+          const _0x1c7512 = new Image();
+          (_0x1c7512[_0x6d2f3(0x1de)] = _0x8e74a2(0x1ca)),
+            (_0x1c7512[_0x3c584d(0x124)] = _0x8e74a2(0x20c)),
+            (_0x1c7512[_0x8e74a2(0x1b8)] = function () {
+              const _0x43fdcf = _0x8e74a2,
+                _0x19995e = 0x18,
+                _0x118e9c =
+                  _0x19995e *
+                  (_0x1c7512[_0x43fdcf(0x22b)] / _0x1c7512[_0x43fdcf(0x1c8)]);
+              _0xa36b2d["drawImage"](
+                _0x1c7512,
+                _0x422322 + _0x16c7fc,
+                _0x1ad050 + _0x4c6906[_0x43fdcf(0x1c8)] - _0x16c7fc - _0x19995e,
+                _0x118e9c,
+                _0x19995e
+              ),
+                _0x230217(_0x9281ad);
+            }),
+            (_0x1c7512[_0x8e74a2(0x1b7)] = function () {
+              _0x230217(_0x9281ad);
+            });
+        }),
+        (_0x2b2df3[_0x19de3c(0x164)] = function () {
+          const _0x5333e2 = _0x19de3c,
+            _0x56d262 = _0x3a7a93;
+          (_0xa36b2d[_0x5333e2(0x15d)] = _0x56d262(0x1dd)),
+            _0x52c9fc(
+              _0xa36b2d,
+              _0x422322 + _0x16c7fc,
+              _0x1ad050 + _0x16c7fc,
+              _0x44d9b6,
+              _0x44d9b6,
+              0x8
+            ),
+            _0xa36b2d["fill"](),
+            (_0xa36b2d[_0x56d262(0x1c9)] = _0x56d262(0x1d1)),
+            (_0xa36b2d[_0x56d262(0x23b)] = _0x56d262(0x207)),
+            _0x151769(
+              _0xa36b2d,
+              _0x31ce89[_0x56d262(0x1fe)],
+              _0x422322 + _0x16c7fc + _0x44d9b6 + 0xf,
+              _0x1ad050 + _0x16c7fc + 0xf,
+              _0x4c6906[_0x56d262(0x22b)] - _0x16c7fc * 0x2 - _0x44d9b6 - 0xf,
+              0x14
+            ),
+            (_0xa36b2d[_0x56d262(0x23b)] = _0x56d262(0x1d5)),
+            _0x151769(
+              _0xa36b2d,
+              _0x36b3aa[_0x56d262(0x1fe)],
+              _0x422322 + _0x16c7fc + _0x44d9b6 + 0xf,
+              _0x1ad050 + _0x16c7fc + 0x28,
+              _0x4c6906[_0x56d262(0x22b)] - _0x16c7fc * 0x2 - _0x44d9b6 - 0xf,
+              0x12
+            ),
+            (_0xa36b2d[_0x56d262(0x23b)] = _0x56d262(0x1e2)),
+            _0x151769(
+              _0xa36b2d,
+              _0x36e7c2[_0x56d262(0x1fe)],
+              _0x422322 + _0x16c7fc,
+              _0x1ad050 + _0x16c7fc + 0x64,
+              _0x4c6906[_0x56d262(0x22b)] - _0x16c7fc * 0x2,
+              0x1e
+            ),
+            _0x230217(_0x9281ad);
+        });
+      function _0x230217(_0xae0584) {
+        const _0x28536c = _0x19de3c,
+          _0x250f90 = _0x3a7a93,
+          _0x490937 = document[_0x250f90(0x209)]("a"),
+          _0x36fba7 = _0x31ce89[_0x250f90(0x1fe)] || _0x250f90(0x234);
+        (_0x490937[_0x250f90(0x1e3)] = _0x36fba7 + _0x250f90(0x1ce)),
+          (_0x490937[_0x28536c(0x196)] = _0xae0584[_0x28536c(0x192)](
+            _0x28536c(0x188)
+          )),
+          _0x490937[_0x250f90(0x1ff)](),
+          _0x393ef3(_0x211d60, _0x250f90(0x210));
+      }
+    }
+    function _0x52c9fc(
+      _0x22cb99,
+      _0x17ccaf,
+      _0x16eb80,
+      _0x488f88,
+      _0x1f8dd4,
+      _0x11aa7f
+    ) {
+      const _0x561fee = _0x3bade4,
+        _0x18fdfd = _0xa60089;
+      _0x22cb99[_0x18fdfd(0x227)](),
+        _0x22cb99[_0x561fee(0x148)](_0x17ccaf + _0x11aa7f, _0x16eb80),
+        _0x22cb99[_0x18fdfd(0x233)](
+          _0x17ccaf + _0x488f88 - _0x11aa7f,
+          _0x16eb80
+        ),
+        _0x22cb99[_0x18fdfd(0x1cb)](
+          _0x17ccaf + _0x488f88,
+          _0x16eb80,
+          _0x17ccaf + _0x488f88,
+          _0x16eb80 + _0x11aa7f
+        ),
+        _0x22cb99[_0x18fdfd(0x233)](
+          _0x17ccaf + _0x488f88,
+          _0x16eb80 + _0x1f8dd4 - _0x11aa7f
+        ),
+        _0x22cb99[_0x561fee(0x126)](
+          _0x17ccaf + _0x488f88,
+          _0x16eb80 + _0x1f8dd4,
+          _0x17ccaf + _0x488f88 - _0x11aa7f,
+          _0x16eb80 + _0x1f8dd4
+        ),
+        _0x22cb99[_0x18fdfd(0x233)](
+          _0x17ccaf + _0x11aa7f,
+          _0x16eb80 + _0x1f8dd4
+        ),
+        _0x22cb99[_0x18fdfd(0x1cb)](
+          _0x17ccaf,
+          _0x16eb80 + _0x1f8dd4,
+          _0x17ccaf,
+          _0x16eb80 + _0x1f8dd4 - _0x11aa7f
+        ),
+        _0x22cb99[_0x18fdfd(0x233)](_0x17ccaf, _0x16eb80 + _0x11aa7f),
+        _0x22cb99[_0x18fdfd(0x1cb)](
+          _0x17ccaf,
+          _0x16eb80,
+          _0x17ccaf + _0x11aa7f,
+          _0x16eb80
+        ),
+        _0x22cb99[_0x18fdfd(0x1c1)]();
+    }
+    function _0x151769(
+      _0x20ff0b,
+      _0x54ae74,
+      _0x320bc4,
+      _0x683984,
+      _0x55db63,
+      _0x37698f
+    ) {
+      const _0x487d58 = _0x3bade4,
+        _0x5f4e0d = _0xa60089,
+        _0x2cf73d = _0x54ae74[_0x5f4e0d(0x1f8)]("\x0a");
+      let _0x1e04c6 = 0x0;
+      for (
+        let _0x3a886c = 0x0;
+        _0x3a886c < _0x2cf73d[_0x5f4e0d(0x1c4)];
+        _0x3a886c++
+      ) {
+        if (_0x2cf73d[_0x3a886c][_0x5f4e0d(0x20a)]() === "") {
+          (_0x683984 += _0x37698f), _0x1e04c6++;
+          continue;
+        }
+        const _0x10bc9d = _0x2cf73d[_0x3a886c][_0x5f4e0d(0x1f8)]("\x20");
+        let _0x52eec5 = "";
+        for (
+          let _0x46d3b8 = 0x0;
+          _0x46d3b8 < _0x10bc9d[_0x487d58(0x11f)];
+          _0x46d3b8++
+        ) {
+          const _0x5afd97 = _0x52eec5 + _0x10bc9d[_0x46d3b8] + "\x20",
+            _0x129bf0 = _0x20ff0b[_0x5f4e0d(0x1b4)](_0x5afd97),
+            _0x237c9f = _0x129bf0[_0x5f4e0d(0x22b)];
+          _0x237c9f > _0x55db63 && _0x46d3b8 > 0x0
+            ? (_0x20ff0b[_0x487d58(0x1a3)](_0x52eec5, _0x320bc4, _0x683984),
+              (_0x52eec5 = _0x10bc9d[_0x46d3b8] + "\x20"),
+              (_0x683984 += _0x37698f),
+              _0x1e04c6++)
+            : (_0x52eec5 = _0x5afd97);
+        }
+        _0x52eec5[_0x5f4e0d(0x20a)]() !== "" &&
+          (_0x20ff0b[_0x487d58(0x1a3)](_0x52eec5, _0x320bc4, _0x683984),
+          _0x3a886c < _0x2cf73d[_0x5f4e0d(0x1c4)] - 0x1 &&
+            ((_0x683984 += _0x37698f), _0x1e04c6++));
+      }
+    }
+    function _0x393ef3(_0x53949b, _0x55f019) {
+      const _0x24c824 = _0x3852d9,
+        _0x4b4724 = _0x3bade4,
+        _0x32e6aa = _0xa60089;
+      (_0x53949b[_0x4b4724(0x16e)]("p")[_0x24c824(0x21e)] = _0x55f019),
+        _0x53949b[_0x32e6aa(0x1c0)][_0x32e6aa(0x23c)](_0x32e6aa(0x241)),
+        _0x53949b[_0x32e6aa(0x1c0)][_0x4b4724(0x1a0)](_0x32e6aa(0x1cf)),
+        setTimeout(() => {
+          const _0x175ce9 = _0x4b4724,
+            _0x1cf4d5 = _0x32e6aa;
+          _0x53949b[_0x1cf4d5(0x1c0)][_0x1cf4d5(0x23c)](_0x175ce9(0x122)),
+            _0x53949b[_0x175ce9(0x1a1)][_0x1cf4d5(0x215)](_0x1cf4d5(0x1d8)),
+            setTimeout(() => {
+              const _0x19d31d = _0x175ce9,
+                _0xbda041 = _0x1cf4d5;
+              _0x53949b[_0xbda041(0x1c0)][_0x19d31d(0x1a0)](_0x19d31d(0x19b)),
+                _0x53949b[_0xbda041(0x1c0)][_0x19d31d(0x17f)](_0xbda041(0x1d8));
+            }, 0x12c);
+        }, 0xfa0);
+    }
+  });

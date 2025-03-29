@@ -1,400 +1,860 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const customImageInput = document.getElementById("custom-image-input");
-  const downloadBtn = document.getElementById("download-btn");
-  const albumArt = document.getElementById("album-art");
-  const logoImage = document.getElementById("logo-image");
-  const gradientItems = document.querySelectorAll(".gradient-item");
-  const color1Input = document.getElementById("color1");
-  const color2Input = document.getElementById("color2");
-  const color1Preview = document.getElementById("color1-preview");
-  const color2Preview = document.getElementById("color2-preview");
-  const lyricsCard = document.getElementById("lyrics-card");
-  const cardBackground = document.querySelector(".card-background");
-  const trackName = document.getElementById("track-name");
-  const artistName = document.getElementById("artist-name");
-  const lyricsText = document.getElementById("lyrics-text");
-
-  let currentGradient = `linear-gradient(135deg, ${color1Input.value}, ${color2Input.value})`;
-
-  // Initialize color previews
-  color1Preview.style.backgroundColor = color1Input.value;
-  color2Preview.style.backgroundColor = color2Input.value;
-
-  // Set default logo
-  logoImage.src = "assets/spotify-logo.png";
-
-  // Set a default album art
-  albumArt.src = "assets/404.jpg";
-
-  // Update color previews and apply gradient when inputs change
-  color1Input.addEventListener("input", () => {
-    color1Preview.style.backgroundColor = color1Input.value;
-    applyCustomGradient();
-  });
-
-  color2Input.addEventListener("input", () => {
-    color2Preview.style.backgroundColor = color2Input.value;
-    applyCustomGradient();
-  });
-
-  function applyCustomGradient() {
-    const customGradient = `linear-gradient(135deg, ${color1Input.value}, ${color2Input.value})`;
-    applyGradient(customGradient);
+(function (_0x312d6f, _0x3bdc42) {
+  const _0x1e8168 = _0x14b7,
+    _0x1bd8b6 = _0x312d6f();
+  while (!![]) {
+    try {
+      const _0x6069e7 =
+        -parseInt(_0x1e8168(0x17f)) / 0x1 +
+        -parseInt(_0x1e8168(0x187)) / 0x2 +
+        -parseInt(_0x1e8168(0x18e)) / 0x3 +
+        (parseInt(_0x1e8168(0x164)) / 0x4) *
+          (-parseInt(_0x1e8168(0x15a)) / 0x5) +
+        (-parseInt(_0x1e8168(0x152)) / 0x6) *
+          (-parseInt(_0x1e8168(0x183)) / 0x7) +
+        (-parseInt(_0x1e8168(0x1a2)) / 0x8) *
+          (parseInt(_0x1e8168(0x154)) / 0x9) +
+        parseInt(_0x1e8168(0x198)) / 0xa;
+      if (_0x6069e7 === _0x3bdc42) break;
+      else _0x1bd8b6["push"](_0x1bd8b6["shift"]());
+    } catch (_0x49a239) {
+      _0x1bd8b6["push"](_0x1bd8b6["shift"]());
+    }
   }
-
-  // Change gradient when a gradient item is clicked
-  gradientItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      // Remove active class from all items
-      gradientItems.forEach((i) => i.classList.remove("active"));
-
-      // Add active class to clicked item
-      item.classList.add("active");
-
-      const gradient = item.getAttribute("data-gradient");
-      applyGradient(gradient);
-
-      // Extract colors from gradient and update color inputs
-      const colors = gradient.match(/#[a-fA-F0-9]{6}/g);
-      if (colors && colors.length >= 2) {
-        color1Input.value = colors[0];
-        color2Input.value = colors[1];
-        color1Preview.style.backgroundColor = colors[0];
-        color2Preview.style.backgroundColor = colors[1];
+})(_0x4e53, 0xec7ec),
+  (function (_0x113369, _0x4c7cad) {
+    const _0x32c26e = _0x14b7,
+      _0x4f6a4b = _0x90fb,
+      _0x4be11e = _0x113369();
+    while (!![]) {
+      try {
+        const _0x39d6c5 =
+          (parseInt(_0x4f6a4b(0xec)) / 0x1) *
+            (-parseInt(_0x4f6a4b(0xd9)) / 0x2) +
+          -parseInt(_0x4f6a4b(0xaa)) / 0x3 +
+          (parseInt(_0x4f6a4b(0x9f)) / 0x4) *
+            (-parseInt(_0x4f6a4b(0x94)) / 0x5) +
+          -parseInt(_0x4f6a4b(0xc4)) / 0x6 +
+          (-parseInt(_0x4f6a4b(0xce)) / 0x7) *
+            (parseInt(_0x4f6a4b(0xbd)) / 0x8) +
+          (parseInt(_0x4f6a4b(0xd0)) / 0x9) *
+            (parseInt(_0x4f6a4b(0xe8)) / 0xa) +
+          parseInt(_0x4f6a4b(0x89)) / 0xb;
+        if (_0x39d6c5 === _0x4c7cad) break;
+        else _0x4be11e[_0x32c26e(0x168)](_0x4be11e[_0x32c26e(0x1a6)]());
+      } catch (_0x306c8c) {
+        _0x4be11e[_0x32c26e(0x168)](_0x4be11e["shift"]());
       }
-    });
-  });
-
-  // Change album art when image is uploaded
-  customImageInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        albumArt.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
     }
-  });
-
-  // Download card when button is clicked
-  downloadBtn.addEventListener("click", downloadCard);
-
-  function applyGradient(gradient) {
-    lyricsCard.style.background = gradient;
-    cardBackground.style.background = gradient;
-    downloadBtn.style.background = gradient;
-    currentGradient = gradient;
+  })(_0x50fc, 0xcc9ef);
+function _0x50fc() {
+  const _0x518444 = _0x14b7,
+    _0x46ae71 = [
+      _0x518444(0x157),
+      _0x518444(0x196),
+      _0x518444(0x188),
+      _0x518444(0x193),
+      _0x518444(0x16d),
+      _0x518444(0x16b),
+      _0x518444(0x181),
+      "12370TivrUi",
+      "shadowBlur",
+      _0x518444(0x189),
+      _0x518444(0x159),
+      _0x518444(0x18b),
+      _0x518444(0x175),
+      _0x518444(0x179),
+      _0x518444(0x192),
+      _0x518444(0x1ac),
+      _0x518444(0x170),
+      "crossOrigin",
+      _0x518444(0x18c),
+      "DOMContentLoaded",
+      _0x518444(0x166),
+      "quadraticCurveTo",
+      _0x518444(0x15b),
+      _0x518444(0x17d),
+      _0x518444(0x145),
+      "3095UZmcXR",
+      "body",
+      _0x518444(0x19b),
+      _0x518444(0x1a3),
+      "click",
+      _0x518444(0x155),
+      _0x518444(0x160),
+      "appendChild",
+      "push",
+      _0x518444(0x146),
+      _0x518444(0x147),
+      _0x518444(0x15f),
+      _0x518444(0x194),
+      "bold\x2016px\x20\x27Circular\x27,\x20Arial,\x20sans-serif",
+      _0x518444(0x178),
+      _0x518444(0x142),
+      _0x518444(0x17e),
+      _0x518444(0x180),
+      _0x518444(0x143),
+      _0x518444(0x148),
+      "innerHTML",
+      "shift",
+      _0x518444(0x1a5),
+      _0x518444(0x184),
+      "fill",
+      _0x518444(0x156),
+      "3XvzpqT",
+      "assets/spotify-logo.png",
+      _0x518444(0x197),
+      _0x518444(0x182),
+      _0x518444(0x163),
+      _0x518444(0x144),
+      _0x518444(0x1a9),
+      _0x518444(0x15e),
+      "rgba(0,\x200,\x200,\x200.25)",
+      _0x518444(0x190),
+      "textContent",
+      "shadowOffsetX",
+      "restore",
+      "match",
+      _0x518444(0x1a4),
+      _0x518444(0x17c),
+      "track-name",
+      _0x518444(0x18d),
+      "custom-image-input",
+      _0x518444(0x169),
+      _0x518444(0x167),
+      _0x518444(0x1a7),
+      "84006dSlPZw",
+      _0x518444(0x18a),
+      _0x518444(0x150),
+      "src",
+      "measureText",
+      "bold\x2024px\x20\x27Circular\x27,\x20Arial,\x20sans-serif",
+      _0x518444(0x17a),
+      _0x518444(0x177),
+      _0x518444(0x173),
+      _0x518444(0x19e),
+      _0x518444(0x1aa),
+      _0x518444(0x14d),
+      _0x518444(0x186),
+      _0x518444(0x199),
+      _0x518444(0x16e),
+      _0x518444(0x1ab),
+      _0x518444(0x14f),
+      _0x518444(0x171),
+      "11435zyikTb",
+      _0x518444(0x14a),
+      ".card-background",
+      _0x518444(0x172),
+      "target",
+      _0x518444(0x161),
+      _0x518444(0x1a0),
+      "font",
+      _0x518444(0x185),
+      "164434wkaYHn",
+      _0x518444(0x19d),
+    ];
+  return (
+    (_0x50fc = function () {
+      return _0x46ae71;
+    }),
+    _0x50fc()
+  );
+}
+const _0xc7fe45 = _0x832e;
+function _0x90fb(_0x373054, _0x5f2074) {
+  const _0x40cfdb = _0x50fc();
+  return (
+    (_0x90fb = function (_0x356e78, _0x32eb1d) {
+      _0x356e78 = _0x356e78 - 0x87;
+      let _0x467dfc = _0x40cfdb[_0x356e78];
+      return _0x467dfc;
+    }),
+    _0x90fb(_0x373054, _0x5f2074)
+  );
+}
+(function (_0x43aef4, _0x4245da) {
+  const _0x260e77 = _0x90fb,
+    _0x47a8e4 = _0x832e,
+    _0x454dd1 = _0x43aef4();
+  while (!![]) {
+    try {
+      const _0x399b5b =
+        (-parseInt(_0x47a8e4(0x1d8)) / 0x1) *
+          (-parseInt(_0x47a8e4(0x1e6)) / 0x2) +
+        -parseInt(_0x47a8e4(0x1f3)) / 0x3 +
+        (parseInt(_0x47a8e4(0x1ff)) / 0x4) *
+          (-parseInt(_0x47a8e4(0x1f8)) / 0x5) +
+        (parseInt(_0x47a8e4(0x1c8)) / 0x6) *
+          (parseInt(_0x47a8e4(0x1fe)) / 0x7) +
+        (-parseInt(_0x47a8e4(0x1fa)) / 0x8) *
+          (-parseInt(_0x47a8e4(0x201)) / 0x9) +
+        (-parseInt(_0x47a8e4(0x1d1)) / 0xa) *
+          (-parseInt(_0x47a8e4(0x1ab)) / 0xb) +
+        (-parseInt(_0x47a8e4(0x1d0)) / 0xc) *
+          (parseInt(_0x47a8e4(0x1cb)) / 0xd);
+      if (_0x399b5b === _0x4245da) break;
+      else _0x454dd1[_0x260e77(0x9c)](_0x454dd1[_0x260e77(0xa9)]());
+    } catch (_0x37ac3e) {
+      _0x454dd1[_0x260e77(0x9c)](_0x454dd1[_0x260e77(0xa9)]());
+    }
   }
-
-  function downloadCard() {
-    // Show a loading notification
-    showCustomNotification(
-      "<i class='fas fa-spinner fa-spin'></i> Generating image..."
-    );
-
-    // 1) Get the .card-background element dimensions
-    const cardBackgroundEl = document.querySelector(".card-background");
-    const cardBackgroundRect = cardBackgroundEl.getBoundingClientRect();
-
-    // Force 3× scale for higher-resolution output
-    const scale = 3;
-
-    // Create a canvas matching the .card-background size * scale
-    const canvas = document.createElement("canvas");
-    canvas.width = cardBackgroundRect.width * scale;
-    canvas.height = cardBackgroundRect.height * scale;
-
-    const ctx = canvas.getContext("2d");
-
-    // Scale all drawing operations for crisp text/images
-    ctx.scale(scale, scale);
-
-    // Fill entire canvas with gradient
-    const gradientColors = currentGradient.match(/#[a-fA-F0-9]{6}/g);
-    if (gradientColors && gradientColors.length >= 2) {
-      const gradient = ctx.createLinearGradient(
-        0,
-        0,
-        cardBackgroundRect.width,
-        cardBackgroundRect.height
-      );
-      gradient.addColorStop(0, gradientColors[0]);
-      gradient.addColorStop(1, gradientColors[1]);
-      ctx.fillStyle = gradient;
-    } else {
-      ctx.fillStyle = "#F5A9C7";
+})(_0x567a, 0x1ec00),
+  document[_0xc7fe45(0x1d9)](_0xc7fe45(0x1c0), () => {
+    const _0x39c362 = _0x14b7,
+      _0x37fbc1 = _0x90fb,
+      _0x2ade4f = _0xc7fe45,
+      _0x5cc5aa = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1ac)),
+      _0x48bb5a = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1e4)),
+      _0x85f1d2 = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1e8)),
+      _0x3a0a0c = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1ce)),
+      _0x3717ee = document[_0x2ade4f(0x1c4)](_0x37fbc1(0x99)),
+      _0x391502 = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1af)),
+      _0x3860ae = document[_0x37fbc1(0xcb)](_0x39c362(0x176)),
+      _0x17c77f = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1fc)),
+      _0x2f1339 = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1ca)),
+      _0x15ac90 = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1ae)),
+      _0x3ef134 = document[_0x2ade4f(0x1ee)](_0x2ade4f(0x1df)),
+      _0x26eb77 = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1c6)),
+      _0x1347bd = document[_0x2ade4f(0x1db)](_0x37fbc1(0xe3)),
+      _0x41db52 = document[_0x2ade4f(0x1db)](_0x2ade4f(0x1ec));
+    let _0x59253c =
+      _0x2ade4f(0x1c7) +
+      _0x391502[_0x37fbc1(0xca)] +
+      ",\x20" +
+      _0x3860ae[_0x2ade4f(0x1dd)] +
+      ")";
+    (_0x17c77f[_0x2ade4f(0x1bc)][_0x37fbc1(0xde)] =
+      _0x391502[_0x2ade4f(0x1dd)]),
+      (_0x2f1339[_0x37fbc1(0xd4)][_0x2ade4f(0x1f6)] =
+        _0x3860ae[_0x2ade4f(0x1dd)]),
+      (_0x3a0a0c[_0x2ade4f(0x1ea)] = _0x2ade4f(0x1fb)),
+      (_0x85f1d2[_0x2ade4f(0x1ea)] = _0x39c362(0x14b)),
+      _0x391502[_0x37fbc1(0x8a)](_0x2ade4f(0x1b2), () => {
+        const _0x85bdc3 = _0x2ade4f;
+        (_0x17c77f[_0x85bdc3(0x1bc)][_0x85bdc3(0x1f6)] =
+          _0x391502[_0x85bdc3(0x1dd)]),
+          _0x5e2a6c();
+      }),
+      _0x3860ae[_0x39c362(0x1ac)](_0x37fbc1(0xb0), () => {
+        const _0x260af8 = _0x37fbc1,
+          _0x37203a = _0x2ade4f;
+        (_0x2f1339[_0x37203a(0x1bc)][_0x260af8(0xde)] =
+          _0x3860ae[_0x37203a(0x1dd)]),
+          _0x5e2a6c();
+      });
+    function _0x5e2a6c() {
+      const _0x737939 = _0x2ade4f,
+        _0x29fbf3 =
+          _0x737939(0x1c7) +
+          _0x391502[_0x737939(0x1dd)] +
+          ",\x20" +
+          _0x3860ae["value"] +
+          ")";
+      _0x218546(_0x29fbf3);
     }
-    ctx.fillRect(0, 0, cardBackgroundRect.width, cardBackgroundRect.height);
-
-    // Draw the card with shadow
-    const cardEl = document.querySelector(".card");
-    const cardRect = cardEl.getBoundingClientRect();
-    const cardX = cardRect.left - cardBackgroundRect.left;
-    const cardY = cardRect.top - cardBackgroundRect.top;
-
-    // Add shadow
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
-    ctx.shadowBlur = 20;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 8;
-
-    // Draw rounded rectangle for card
-    roundRect(ctx, cardX, cardY, cardRect.width, cardRect.height, 12);
-
-    // Fill with gradient
-    if (gradientColors && gradientColors.length >= 2) {
-      const cardGradient = ctx.createLinearGradient(
-        cardX,
-        cardY,
-        cardX + cardRect.width,
-        cardY + cardRect.height
-      );
-      cardGradient.addColorStop(0, gradientColors[0]);
-      cardGradient.addColorStop(1, gradientColors[1]);
-      ctx.fillStyle = cardGradient;
-    } else {
-      ctx.fillStyle = "#F5A9C7";
+    _0x3717ee[_0x2ade4f(0x1b6)]((_0x1ebdf3) => {
+      const _0x2ead9a = _0x39c362,
+        _0x206b41 = _0x2ade4f;
+      _0x1ebdf3[_0x206b41(0x1d9)](_0x2ead9a(0x1a8), () => {
+        const _0x2b4a29 = _0x206b41;
+        _0x3717ee[_0x2b4a29(0x1b6)]((_0x2261d3) =>
+          _0x2261d3[_0x2b4a29(0x204)][_0x2b4a29(0x1cd)](_0x2b4a29(0x208))
+        ),
+          _0x1ebdf3[_0x2b4a29(0x204)][_0x2b4a29(0x1c3)](_0x2b4a29(0x208));
+        const _0x283609 = _0x1ebdf3[_0x2b4a29(0x1dc)](_0x2b4a29(0x1cc));
+        _0x218546(_0x283609);
+        const _0xe7cc7 = _0x283609[_0x2b4a29(0x1e2)](/#[a-fA-F0-9]{6}/g);
+        _0xe7cc7 &&
+          _0xe7cc7[_0x2b4a29(0x20e)] >= 0x2 &&
+          ((_0x391502[_0x2b4a29(0x1dd)] = _0xe7cc7[0x0]),
+          (_0x3860ae[_0x2b4a29(0x1dd)] = _0xe7cc7[0x1]),
+          (_0x17c77f[_0x2b4a29(0x1bc)][_0x2b4a29(0x1f6)] = _0xe7cc7[0x0]),
+          (_0x2f1339[_0x2b4a29(0x1bc)][_0x2b4a29(0x1f6)] = _0xe7cc7[0x1]));
+      });
+    }),
+      _0x5cc5aa[_0x2ade4f(0x1d9)](_0x2ade4f(0x206), (_0x287141) => {
+        const _0x580151 = _0x37fbc1,
+          _0x3de86e = _0x2ade4f,
+          _0xfb90b0 = _0x287141[_0x3de86e(0x1ba)][_0x580151(0xcf)][0x0];
+        if (_0xfb90b0) {
+          const _0x651fe5 = new FileReader();
+          (_0x651fe5[_0x3de86e(0x1bb)] = (_0x46bb1f) => {
+            const _0xdda702 = _0x580151,
+              _0x4e688b = _0x3de86e;
+            _0x85f1d2[_0xdda702(0xc7)] =
+              _0x46bb1f[_0x4e688b(0x1ba)][_0x4e688b(0x1f9)];
+          }),
+            _0x651fe5[_0x3de86e(0x209)](_0xfb90b0);
+        }
+      }),
+      _0x48bb5a[_0x2ade4f(0x1d9)](_0x2ade4f(0x1f1), _0x2c9ecf);
+    function _0x218546(_0x3cc975) {
+      const _0x2269ab = _0x2ade4f;
+      (_0x15ac90[_0x2269ab(0x1bc)][_0x2269ab(0x1fd)] = _0x3cc975),
+        (_0x3ef134[_0x2269ab(0x1bc)][_0x2269ab(0x1fd)] = _0x3cc975),
+        (_0x48bb5a[_0x2269ab(0x1bc)][_0x2269ab(0x1fd)] = _0x3cc975),
+        (_0x59253c = _0x3cc975);
     }
-    ctx.fill();
-    ctx.restore();
-
-    // Draw album art
-    const artSize = 50;
-    const contentPadding = 25;
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = albumArt.src;
-
-    img.onload = function () {
-      // Draw album art
-      ctx.save();
-      roundRect(
-        ctx,
-        cardX + contentPadding,
-        cardY + contentPadding,
-        artSize,
-        artSize,
-        8
-      );
-      ctx.clip();
-      ctx.drawImage(
-        img,
-        cardX + contentPadding,
-        cardY + contentPadding,
-        artSize,
-        artSize
-      );
-      ctx.restore();
-
-      // Draw track info
-      ctx.fillStyle = "black";
-      ctx.font = "bold 16px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        trackName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 15,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        20
-      );
-
-      ctx.font = "14px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        artistName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 40,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        18
-      );
-
-      // Draw lyrics - Get raw content with line breaks
-      const rawLyrics = lyricsText.innerText || lyricsText.textContent;
-
-      ctx.font = "bold 24px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        rawLyrics,
-        cardX + contentPadding,
-        cardY + contentPadding + 100,
-        cardRect.width - contentPadding * 2,
-        30
-      );
-
-      // Draw logo
-      const logoImg = new Image();
-      logoImg.crossOrigin = "Anonymous";
-      logoImg.src = "assets/spotify-logo.png";
-
-      logoImg.onload = function () {
-        const logoHeight = 24;
-        const logoWidth = logoHeight * (logoImg.width / logoImg.height);
-
-        ctx.drawImage(
-          logoImg,
-          cardX + contentPadding,
-          cardY + cardRect.height - contentPadding - logoHeight,
-          logoWidth,
-          logoHeight
+    function _0x2c9ecf() {
+      const _0x50593e = _0x39c362,
+        _0x3930a5 = _0x37fbc1,
+        _0x1c7b14 = _0x2ade4f;
+      _0x513368(_0x1c7b14(0x1d6));
+      const _0x252972 = document[_0x1c7b14(0x1ee)](_0x1c7b14(0x1df)),
+        _0x2df4d3 = _0x252972[_0x1c7b14(0x1e3)](),
+        _0x30b3d8 = 0x3,
+        _0x2f99d6 = document[_0x3930a5(0x9e)](_0x1c7b14(0x1aa));
+      (_0x2f99d6[_0x1c7b14(0x1b0)] = _0x2df4d3[_0x1c7b14(0x1b0)] * _0x30b3d8),
+        (_0x2f99d6[_0x1c7b14(0x1d7)] = _0x2df4d3[_0x1c7b14(0x1d7)] * _0x30b3d8);
+      const _0x46a762 = _0x2f99d6[_0x1c7b14(0x1e0)]("2d");
+      _0x46a762[_0x1c7b14(0x20f)](_0x30b3d8, _0x30b3d8);
+      const _0x158132 = _0x59253c[_0x1c7b14(0x1e2)](/#[a-fA-F0-9]{6}/g);
+      if (_0x158132 && _0x158132[_0x3930a5(0xd5)] >= 0x2) {
+        const _0x4f9d85 = _0x46a762[_0x1c7b14(0x1d3)](
+          0x0,
+          0x0,
+          _0x2df4d3[_0x1c7b14(0x1b0)],
+          _0x2df4d3[_0x1c7b14(0x1d7)]
         );
-
-        // Download the image
-        finishDownload(canvas);
-      };
-
-      logoImg.onerror = function () {
-        finishDownload(canvas);
-      };
-    };
-
-    img.onerror = function () {
-      // Draw placeholder for album art
-      ctx.fillStyle = "#333";
-      roundRect(
-        ctx,
-        cardX + contentPadding,
-        cardY + contentPadding,
-        artSize,
-        artSize,
-        8
+        _0x4f9d85[_0x1c7b14(0x200)](0x0, _0x158132[0x0]),
+          _0x4f9d85[_0x3930a5(0xa2)](0x1, _0x158132[0x1]),
+          (_0x46a762[_0x1c7b14(0x203)] = _0x4f9d85);
+      } else _0x46a762[_0x1c7b14(0x203)] = _0x1c7b14(0x1cf);
+      _0x46a762[_0x3930a5(0xe0)](
+        0x0,
+        0x0,
+        _0x2df4d3[_0x1c7b14(0x1b0)],
+        _0x2df4d3[_0x1c7b14(0x1d7)]
       );
-      ctx.fill();
-
-      // Draw the rest of the content
-      ctx.fillStyle = "black";
-      ctx.font = "bold 16px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        trackName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 15,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        20
-      );
-
-      ctx.font = "14px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        artistName.textContent,
-        cardX + contentPadding + artSize + 15,
-        cardY + contentPadding + 40,
-        cardRect.width - contentPadding * 2 - artSize - 15,
-        18
-      );
-
-      // Draw lyrics
-      const rawLyrics = lyricsText.innerText || lyricsText.textContent;
-
-      ctx.font = "bold 24px 'Circular', Arial, sans-serif";
-      wrapText(
-        ctx,
-        rawLyrics,
-        cardX + contentPadding,
-        cardY + contentPadding + 100,
-        cardRect.width - contentPadding * 2,
-        30
-      );
-
-      finishDownload(canvas);
-    };
-  }
-
-  function finishDownload(canvasEl) {
-    const link = document.createElement("a");
-    const cardTitle = trackName.textContent || "Custom";
-    link.download = `${cardTitle} - SpotiCard.png`;
-    link.href = canvasEl.toDataURL("image/png");
-    link.click();
-
-    showCustomNotification(
-      "<i class='fas fa-check-circle'></i> Image downloaded successfully!"
-    );
-  }
-
-  function showCustomNotification(message) {
-    // Remove any existing notifications
-    const existingNotification = document.querySelector(".custom-notification");
-    if (existingNotification) {
-      existingNotification.remove();
+      const _0x1935da = document[_0x1c7b14(0x1ee)](_0x3930a5(0xe7)),
+        _0x166463 = _0x1935da[_0x1c7b14(0x1e3)](),
+        _0x1ef844 = _0x166463[_0x1c7b14(0x1f5)] - _0x2df4d3[_0x1c7b14(0x1f5)],
+        _0x545f6b = _0x166463[_0x1c7b14(0x1c5)] - _0x2df4d3[_0x1c7b14(0x1c5)];
+      _0x46a762[_0x1c7b14(0x20d)](),
+        (_0x46a762[_0x50593e(0x191)] = _0x1c7b14(0x1f4)),
+        (_0x46a762[_0x1c7b14(0x1d5)] = 0x14),
+        (_0x46a762[_0x3930a5(0xb9)] = 0x0),
+        (_0x46a762[_0x1c7b14(0x1ed)] = 0x8),
+        _0x1da301(
+          _0x46a762,
+          _0x1ef844,
+          _0x545f6b,
+          _0x166463[_0x3930a5(0xb7)],
+          _0x166463[_0x50593e(0x184)],
+          0xc
+        );
+      if (_0x158132 && _0x158132[_0x1c7b14(0x20e)] >= 0x2) {
+        const _0x543399 = _0x46a762[_0x1c7b14(0x1d3)](
+          _0x1ef844,
+          _0x545f6b,
+          _0x1ef844 + _0x166463[_0x1c7b14(0x1b0)],
+          _0x545f6b + _0x166463[_0x1c7b14(0x1d7)]
+        );
+        _0x543399[_0x1c7b14(0x200)](0x0, _0x158132[0x0]),
+          _0x543399[_0x1c7b14(0x200)](0x1, _0x158132[0x1]),
+          (_0x46a762[_0x1c7b14(0x203)] = _0x543399);
+      } else _0x46a762[_0x1c7b14(0x203)] = _0x1c7b14(0x1cf);
+      _0x46a762[_0x1c7b14(0x1de)](), _0x46a762[_0x1c7b14(0x1bd)]();
+      const _0x24f9ab = 0x32,
+        _0x44184f = 0x19,
+        _0x41d2b2 = new Image();
+      (_0x41d2b2[_0x1c7b14(0x1d2)] = _0x1c7b14(0x1b7)),
+        (_0x41d2b2[_0x1c7b14(0x1ea)] = _0x85f1d2[_0x1c7b14(0x1ea)]),
+        (_0x41d2b2[_0x3930a5(0xbc)] = function () {
+          const _0x53119b = _0x3930a5,
+            _0x1ec881 = _0x1c7b14;
+          _0x46a762[_0x1ec881(0x20d)](),
+            _0x1da301(
+              _0x46a762,
+              _0x1ef844 + _0x44184f,
+              _0x545f6b + _0x44184f,
+              _0x24f9ab,
+              _0x24f9ab,
+              0x8
+            ),
+            _0x46a762[_0x1ec881(0x1b5)](),
+            _0x46a762[_0x53119b(0xe1)](
+              _0x41d2b2,
+              _0x1ef844 + _0x44184f,
+              _0x545f6b + _0x44184f,
+              _0x24f9ab,
+              _0x24f9ab
+            ),
+            _0x46a762[_0x1ec881(0x1bd)](),
+            (_0x46a762[_0x1ec881(0x203)] = _0x1ec881(0x20a)),
+            (_0x46a762[_0x53119b(0xdd)] = _0x1ec881(0x202)),
+            _0x29c567(
+              _0x46a762,
+              _0x26eb77[_0x1ec881(0x1be)],
+              _0x1ef844 + _0x44184f + _0x24f9ab + 0xf,
+              _0x545f6b + _0x44184f + 0xf,
+              _0x166463[_0x53119b(0xb7)] - _0x44184f * 0x2 - _0x24f9ab - 0xf,
+              0x14
+            ),
+            (_0x46a762[_0x1ec881(0x1eb)] = _0x1ec881(0x1a9)),
+            _0x29c567(
+              _0x46a762,
+              _0x1347bd[_0x1ec881(0x1be)],
+              _0x1ef844 + _0x44184f + _0x24f9ab + 0xf,
+              _0x545f6b + _0x44184f + 0x28,
+              _0x166463[_0x1ec881(0x1b0)] - _0x44184f * 0x2 - _0x24f9ab - 0xf,
+              0x12
+            );
+          const _0xc8e319 =
+            _0x41db52[_0x1ec881(0x1d4)] || _0x41db52[_0x1ec881(0x1be)];
+          (_0x46a762[_0x1ec881(0x1eb)] = _0x1ec881(0x1ad)),
+            _0x29c567(
+              _0x46a762,
+              _0xc8e319,
+              _0x1ef844 + _0x44184f,
+              _0x545f6b + _0x44184f + 0x64,
+              _0x166463[_0x1ec881(0x1b0)] - _0x44184f * 0x2,
+              0x1e
+            );
+          const _0x595f36 = new Image();
+          (_0x595f36[_0x1ec881(0x1d2)] = _0x1ec881(0x1b7)),
+            (_0x595f36[_0x53119b(0xc7)] = _0x53119b(0xaf)),
+            (_0x595f36[_0x53119b(0xbc)] = function () {
+              const _0x35ef03 = _0x53119b,
+                _0x2774e4 = _0x1ec881,
+                _0x7ebfa1 = 0x18,
+                _0x427697 =
+                  _0x7ebfa1 *
+                  (_0x595f36[_0x35ef03(0xb7)] / _0x595f36[_0x35ef03(0xab)]);
+              _0x46a762[_0x2774e4(0x1b8)](
+                _0x595f36,
+                _0x1ef844 + _0x44184f,
+                _0x545f6b + _0x166463[_0x2774e4(0x1d7)] - _0x44184f - _0x7ebfa1,
+                _0x427697,
+                _0x7ebfa1
+              ),
+                _0x26bbc1(_0x2f99d6);
+            }),
+            (_0x595f36[_0x1ec881(0x207)] = function () {
+              _0x26bbc1(_0x2f99d6);
+            });
+        }),
+        (_0x41d2b2[_0x1c7b14(0x207)] = function () {
+          const _0x59d472 = _0x50593e,
+            _0x20fddd = _0x3930a5,
+            _0x470e31 = _0x1c7b14;
+          (_0x46a762[_0x470e31(0x203)] = _0x470e31(0x20b)),
+            _0x1da301(
+              _0x46a762,
+              _0x1ef844 + _0x44184f,
+              _0x545f6b + _0x44184f,
+              _0x24f9ab,
+              _0x24f9ab,
+              0x8
+            ),
+            _0x46a762[_0x470e31(0x1de)](),
+            (_0x46a762[_0x20fddd(0x88)] = _0x470e31(0x20a)),
+            (_0x46a762[_0x59d472(0x16f)] = _0x470e31(0x202)),
+            _0x29c567(
+              _0x46a762,
+              _0x26eb77[_0x470e31(0x1be)],
+              _0x1ef844 + _0x44184f + _0x24f9ab + 0xf,
+              _0x545f6b + _0x44184f + 0xf,
+              _0x166463[_0x59d472(0x190)] - _0x44184f * 0x2 - _0x24f9ab - 0xf,
+              0x14
+            ),
+            (_0x46a762[_0x20fddd(0xdd)] = _0x470e31(0x1a9)),
+            _0x29c567(
+              _0x46a762,
+              _0x1347bd[_0x470e31(0x1be)],
+              _0x1ef844 + _0x44184f + _0x24f9ab + 0xf,
+              _0x545f6b + _0x44184f + 0x28,
+              _0x166463[_0x470e31(0x1b0)] - _0x44184f * 0x2 - _0x24f9ab - 0xf,
+              0x12
+            );
+          const _0x366af8 =
+            _0x41db52[_0x470e31(0x1d4)] || _0x41db52[_0x20fddd(0xb8)];
+          (_0x46a762[_0x470e31(0x1eb)] = _0x470e31(0x1ad)),
+            _0x29c567(
+              _0x46a762,
+              _0x366af8,
+              _0x1ef844 + _0x44184f,
+              _0x545f6b + _0x44184f + 0x64,
+              _0x166463[_0x470e31(0x1b0)] - _0x44184f * 0x2,
+              0x1e
+            ),
+            _0x26bbc1(_0x2f99d6);
+        });
     }
-
-    // Create a new notification
-    const notificationEl = document.createElement("div");
-    notificationEl.className = "custom-notification";
-    notificationEl.innerHTML = message;
-
-    // Add to document
-    document.body.appendChild(notificationEl);
-
-    // Hide notification after 3 seconds
-    setTimeout(() => {
-      notificationEl.style.opacity = "0";
-      setTimeout(() => {
-        notificationEl.remove();
-      }, 300);
-    }, 3000);
-  }
-
-  function roundRect(ctx, x, y, width, height, radius) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-  }
-
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-    // Split by line breaks first to preserve intentional breaks
-    const paragraphs = text.split("\n");
-    let totalLines = 0;
-
-    // Process each paragraph
-    for (let i = 0; i < paragraphs.length; i++) {
-      if (paragraphs[i].trim() === "") {
-        // Empty line, just advance y position
-        y += lineHeight;
-        totalLines++;
-        continue;
-      }
-
-      // Split paragraph into words
-      const words = paragraphs[i].split(" ");
-      let line = "";
-
-      // Process words in this paragraph
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + " ";
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-
-        if (testWidth > maxWidth && n > 0) {
-          ctx.fillText(line, x, y);
-          line = words[n] + " ";
-          y += lineHeight;
-          totalLines++;
-        } else {
-          line = testLine;
+    function _0x26bbc1(_0x493ea3) {
+      const _0x5c57f8 = _0x37fbc1,
+        _0x565f49 = _0x2ade4f,
+        _0x6c1c01 = document[_0x565f49(0x1c1)]("a"),
+        _0x1700ac = _0x26eb77[_0x565f49(0x1be)] || _0x565f49(0x1b4);
+      (_0x6c1c01[_0x565f49(0x1c9)] = _0x1700ac + _0x5c57f8(0xd3)),
+        (_0x6c1c01[_0x565f49(0x1b1)] = _0x493ea3[_0x565f49(0x1ef)](
+          _0x565f49(0x205)
+        )),
+        _0x6c1c01[_0x565f49(0x1f1)](),
+        _0x513368(_0x565f49(0x1f2));
+    }
+    function _0x513368(_0x7479cc) {
+      const _0x451e65 = _0x37fbc1,
+        _0x4a37c8 = _0x2ade4f,
+        _0x4447a5 = document[_0x4a37c8(0x1ee)](_0x4a37c8(0x1e9));
+      _0x4447a5 && _0x4447a5[_0x4a37c8(0x1cd)]();
+      const _0x1527a8 = document[_0x4a37c8(0x1c1)](_0x4a37c8(0x1e1));
+      (_0x1527a8[_0x451e65(0xe5)] = _0x451e65(0xb1)),
+        (_0x1527a8[_0x451e65(0xa8)] = _0x7479cc),
+        document[_0x4a37c8(0x1e7)][_0x4a37c8(0x1c2)](_0x1527a8),
+        setTimeout(() => {
+          const _0x14bac5 = _0x4a37c8;
+          (_0x1527a8[_0x14bac5(0x1bc)][_0x14bac5(0x1a8)] = "0"),
+            setTimeout(() => {
+              const _0x28c969 = _0x14bac5;
+              _0x1527a8[_0x28c969(0x1cd)]();
+            }, 0x12c);
+        }, 0xbb8);
+    }
+    function _0x1da301(
+      _0xe1e18d,
+      _0x1d6490,
+      _0x1a3a23,
+      _0x6ac4ee,
+      _0x18b434,
+      _0x448d42
+    ) {
+      const _0x5307fa = _0x39c362,
+        _0x5a64db = _0x2ade4f;
+      _0xe1e18d[_0x5307fa(0x174)](),
+        _0xe1e18d[_0x5a64db(0x1f7)](_0x1d6490 + _0x448d42, _0x1a3a23),
+        _0xe1e18d[_0x5a64db(0x1b3)](
+          _0x1d6490 + _0x6ac4ee - _0x448d42,
+          _0x1a3a23
+        ),
+        _0xe1e18d[_0x5a64db(0x1b9)](
+          _0x1d6490 + _0x6ac4ee,
+          _0x1a3a23,
+          _0x1d6490 + _0x6ac4ee,
+          _0x1a3a23 + _0x448d42
+        ),
+        _0xe1e18d[_0x5a64db(0x1b3)](
+          _0x1d6490 + _0x6ac4ee,
+          _0x1a3a23 + _0x18b434 - _0x448d42
+        ),
+        _0xe1e18d[_0x5a64db(0x1b9)](
+          _0x1d6490 + _0x6ac4ee,
+          _0x1a3a23 + _0x18b434,
+          _0x1d6490 + _0x6ac4ee - _0x448d42,
+          _0x1a3a23 + _0x18b434
+        ),
+        _0xe1e18d[_0x5a64db(0x1b3)](
+          _0x1d6490 + _0x448d42,
+          _0x1a3a23 + _0x18b434
+        ),
+        _0xe1e18d[_0x5a64db(0x1b9)](
+          _0x1d6490,
+          _0x1a3a23 + _0x18b434,
+          _0x1d6490,
+          _0x1a3a23 + _0x18b434 - _0x448d42
+        ),
+        _0xe1e18d[_0x5a64db(0x1b3)](_0x1d6490, _0x1a3a23 + _0x448d42),
+        _0xe1e18d[_0x5a64db(0x1b9)](
+          _0x1d6490,
+          _0x1a3a23,
+          _0x1d6490 + _0x448d42,
+          _0x1a3a23
+        ),
+        _0xe1e18d[_0x5a64db(0x1da)]();
+    }
+    function _0x29c567(
+      _0x4ff40f,
+      _0x3cfe7a,
+      _0x1214e9,
+      _0x14d486,
+      _0x253020,
+      _0x1460d6
+    ) {
+      const _0x1bd45c = _0x2ade4f,
+        _0x9a878f = _0x3cfe7a[_0x1bd45c(0x1bf)]("\x0a");
+      let _0x4aaed6 = 0x0;
+      for (
+        let _0x39fd21 = 0x0;
+        _0x39fd21 < _0x9a878f[_0x1bd45c(0x20e)];
+        _0x39fd21++
+      ) {
+        if (_0x9a878f[_0x39fd21][_0x1bd45c(0x1e5)]() === "") {
+          (_0x14d486 += _0x1460d6), _0x4aaed6++;
+          continue;
         }
-      }
-
-      // Draw the remaining line in this paragraph
-      if (line.trim() !== "") {
-        ctx.fillText(line, x, y);
-
-        // Only add line height if not the last paragraph
-        if (i < paragraphs.length - 1) {
-          y += lineHeight;
-          totalLines++;
+        const _0x40d55e = _0x9a878f[_0x39fd21][_0x1bd45c(0x1bf)]("\x20");
+        let _0x880f00 = "";
+        for (
+          let _0x5400a3 = 0x0;
+          _0x5400a3 < _0x40d55e[_0x1bd45c(0x20e)];
+          _0x5400a3++
+        ) {
+          const _0x3913c5 = _0x880f00 + _0x40d55e[_0x5400a3] + "\x20",
+            _0x2259f2 = _0x4ff40f[_0x1bd45c(0x20c)](_0x3913c5),
+            _0x471e0f = _0x2259f2[_0x1bd45c(0x1b0)];
+          _0x471e0f > _0x253020 && _0x5400a3 > 0x0
+            ? (_0x4ff40f[_0x1bd45c(0x1f0)](_0x880f00, _0x1214e9, _0x14d486),
+              (_0x880f00 = _0x40d55e[_0x5400a3] + "\x20"),
+              (_0x14d486 += _0x1460d6),
+              _0x4aaed6++)
+            : (_0x880f00 = _0x3913c5);
         }
+        _0x880f00[_0x1bd45c(0x1e5)]() !== "" &&
+          (_0x4ff40f[_0x1bd45c(0x1f0)](_0x880f00, _0x1214e9, _0x14d486),
+          _0x39fd21 < _0x9a878f["length"] - 0x1 &&
+            ((_0x14d486 += _0x1460d6), _0x4aaed6++));
       }
     }
-  }
-});
+  });
+function _0x832e(_0x42e45d, _0x9c6c4d) {
+  const _0x404f46 = _0x567a();
+  return (
+    (_0x832e = function (_0x1ec133, _0x35ec4d) {
+      _0x1ec133 = _0x1ec133 - 0x1a8;
+      let _0x18d6e7 = _0x404f46[_0x1ec133];
+      return _0x18d6e7;
+    }),
+    _0x832e(_0x42e45d, _0x9c6c4d)
+  );
+}
+function _0x14b7(_0x4d92c8, _0x37b0fc) {
+  const _0x4e53be = _0x4e53();
+  return (
+    (_0x14b7 = function (_0x14b7f0, _0xa2f679) {
+      _0x14b7f0 = _0x14b7f0 - 0x142;
+      let _0x4407f9 = _0x4e53be[_0x14b7f0];
+      return _0x4407f9;
+    }),
+    _0x14b7(_0x4d92c8, _0x37b0fc)
+  );
+}
+function _0x4e53() {
+  const _0x52f710 = [
+    "split",
+    "classList",
+    "5258540CoMGFT",
+    "35oNhhns",
+    "createLinearGradient",
+    "data-gradient",
+    "push",
+    "black",
+    "lyrics-card",
+    "closePath",
+    "Custom",
+    "className",
+    "lineTo",
+    "font",
+    "add",
+    "length",
+    "258nZIzOq",
+    "image/png",
+    "beginPath",
+    "save",
+    "color2",
+    "getElementById",
+    "addColorStop",
+    "fillStyle",
+    "value",
+    "remove",
+    "5440GqKnKX",
+    "119484BlfNYU",
+    "getAttribute",
+    "30327HBqPjo",
+    "readAsDataURL",
+    ".card",
+    "custom-notification",
+    "84xGthKB",
+    "height",
+    "backgroundColor",
+    "3879qZhnIG",
+    "3459010oezRal",
+    "artist-name",
+    "shadowOffsetY",
+    "download-btn",
+    "8302ZrbRhX",
+    "album-art",
+    "toDataURL",
+    "4700406oeZxKc",
+    "10qDOxFa",
+    "width",
+    "shadowColor",
+    "44429066JNtXjt",
+    "195fqcZHH",
+    "575838dCnVKX",
+    "color2-preview",
+    "background",
+    "input",
+    "61293920dmMJgd",
+    "<i\x20class=\x27fas\x20fa-spinner\x20fa-spin\x27></i>\x20Generating\x20image...",
+    "getContext",
+    "#333",
+    "727177yAnkjn",
+    "fillRect",
+    "active",
+    ".custom-notification",
+    "fillText",
+    "top",
+    "4287224bTrqhh",
+    "href",
+    "onload",
+    "1875198yPnfuV",
+    "shift",
+    "<i\x20class=\x27fas\x20fa-check-circle\x27></i>\x20Image\x20downloaded\x20successfully!",
+    "click",
+    "452961AoEOpF",
+    "3892lAOxFd",
+    "\x20-\x20SpotiCard.png",
+    "addEventListener",
+    "div",
+    "moveTo",
+    "trim",
+    "Anonymous",
+    "left",
+    "createElement",
+    "querySelector",
+    "canvas",
+    "forEach",
+    "assets/404.jpg",
+    "scale",
+    "files",
+    "24KIXJBt",
+    "style",
+    "download",
+    "14px\x20\x27Circular\x27,\x20Arial,\x20sans-serif",
+    "8232SgLDlo",
+    "opacity",
+    "9bLdStA",
+    ".gradient-item",
+    "innerText",
+    "drawImage",
+    "color1",
+    "lyrics-text",
+    "5cjRPrX",
+    "124vUztrF",
+    "assets/spotify-logo.png",
+    "89286HRGmTS",
+    "querySelectorAll",
+    "10636iHVSyw",
+    "result",
+    "#F5A9C7",
+  ];
+  _0x4e53 = function () {
+    return _0x52f710;
+  };
+  return _0x4e53();
+}
+function _0x567a() {
+  const _0x155291 = _0x14b7,
+    _0xbb48ec = _0x90fb,
+    _0x254da7 = [
+      "change",
+      "onerror",
+      _0xbb48ec(0xcd),
+      _0xbb48ec(0xa5),
+      _0xbb48ec(0xc1),
+      _0xbb48ec(0x96),
+      _0xbb48ec(0xc8),
+      _0xbb48ec(0x87),
+      _0x155291(0x171),
+      _0x155291(0x14c),
+      _0x155291(0x153),
+      _0x155291(0x151),
+      _0x155291(0x149),
+      _0x155291(0x19c),
+      _0xbb48ec(0xc0),
+      _0xbb48ec(0xc9),
+      _0x155291(0x16a),
+      _0x155291(0x158),
+      _0x155291(0x190),
+      _0xbb48ec(0x97),
+      _0xbb48ec(0xb0),
+      _0xbb48ec(0xd2),
+      _0x155291(0x16c),
+      "clip",
+      _0xbb48ec(0xd7),
+      _0xbb48ec(0x93),
+      "drawImage",
+      _0xbb48ec(0x90),
+      _0xbb48ec(0xda),
+      _0xbb48ec(0xbc),
+      _0xbb48ec(0xd4),
+      _0xbb48ec(0xba),
+      _0xbb48ec(0xb8),
+      _0x155291(0x162),
+      _0xbb48ec(0x8e),
+      _0xbb48ec(0x9e),
+      _0xbb48ec(0x9b),
+      _0xbb48ec(0x8b),
+      _0xbb48ec(0xb5),
+      _0x155291(0x1a1),
+      _0xbb48ec(0xbe),
+      "linear-gradient(135deg,\x20",
+      _0x155291(0x15d),
+      _0xbb48ec(0xc6),
+      _0x155291(0x195),
+      _0xbb48ec(0xe4),
+      _0xbb48ec(0xc2),
+      _0x155291(0x17b),
+      "logo-image",
+      _0xbb48ec(0xdb),
+      _0xbb48ec(0x92),
+      _0x155291(0x18f),
+      _0xbb48ec(0x8c),
+      _0xbb48ec(0x8f),
+      _0xbb48ec(0xad),
+      _0xbb48ec(0xe9),
+      _0xbb48ec(0xd1),
+      _0x155291(0x184),
+      _0xbb48ec(0xae),
+      _0xbb48ec(0x8a),
+      _0xbb48ec(0xe6),
+      _0xbb48ec(0xcb),
+      _0xbb48ec(0xa4),
+      _0x155291(0x17a),
+      _0xbb48ec(0xac),
+      _0xbb48ec(0xd8),
+      _0x155291(0x19a),
+      _0xbb48ec(0xa3),
+      _0xbb48ec(0xbb),
+      "getBoundingClientRect",
+      _0xbb48ec(0xc5),
+      _0xbb48ec(0xb3),
+      _0xbb48ec(0xdf),
+      _0xbb48ec(0x95),
+      _0xbb48ec(0x8d),
+      _0x155291(0x19f),
+      _0xbb48ec(0xc7),
+      _0x155291(0x16f),
+      _0xbb48ec(0xeb),
+      _0xbb48ec(0xea),
+      _0xbb48ec(0xa7),
+      _0xbb48ec(0xbf),
+      _0xbb48ec(0xdc),
+      _0xbb48ec(0x98),
+      _0xbb48ec(0xc3),
+      _0xbb48ec(0xa0),
+      _0xbb48ec(0xb6),
+      _0xbb48ec(0x9d),
+      _0xbb48ec(0xde),
+      _0xbb48ec(0xa6),
+      _0xbb48ec(0xd6),
+      _0xbb48ec(0x9a),
+      _0x155291(0x14e),
+      _0x155291(0x15c),
+      "color1-preview",
+      _0xbb48ec(0xe2),
+      _0x155291(0x165),
+      _0xbb48ec(0x91),
+      _0xbb48ec(0xa2),
+      _0xbb48ec(0xb4),
+      _0xbb48ec(0xa1),
+      _0xbb48ec(0x88),
+      _0xbb48ec(0xb2),
+      _0xbb48ec(0xcc),
+    ];
+  return (
+    (_0x567a = function () {
+      return _0x254da7;
+    }),
+    _0x567a()
+  );
+}
